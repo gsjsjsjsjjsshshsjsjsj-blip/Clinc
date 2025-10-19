@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التقارير والإحصائيات - شفاء</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .admin-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 1rem 0;
+        }
+        .report-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .report-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .metric-card {
+            background: #f8f9fa;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #10B981;
+        }
+        .metric-label {
+            color: #6c757d;
+            font-size: 0.875rem;
+        }
+        .trend-up {
+            color: #10B981;
+        }
+        .trend-down {
+            color: #EF4444;
+        }
+        .filter-section {
+            background: #f8f9fa;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .export-btn {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- شريط التنقل -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold fs-4 text-primary" href="../index.html">
+                <i class="bi bi-activity"></i> شفاء - الإدارة
+            </a>
+            <div class="ms-auto d-flex align-items-center">
+                <div class="dropdown me-3">
+                    <button class="btn btn-outline-primary position-relative" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-bell-fill"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationBadge">
+                            0
+                        </span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" style="width: 300px;">
+                        <li><h6 class="dropdown-header">الإشعارات</h6></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <div id="notificationsList">
+                            <li class="dropdown-item text-center text-muted">لا توجد إشعارات</li>
+                        </div>
+                    </ul>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> <span id="userName">المدير</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="dashboard.html"><i class="bi bi-speedometer2 me-2"></i>لوحة التحكم</a></li>
+                        <li><a class="dropdown-item" href="users.html"><i class="bi bi-people me-2"></i>إدارة المستخدمين</a></li>
+                        <li><a class="dropdown-item" href="doctors.html"><i class="bi bi-person-badge me-2"></i>إدارة الأطباء</a></li>
+                        <li><a class="dropdown-item" href="appointments.html"><i class="bi bi-calendar-check me-2"></i>إدارة المواعيد</a></li>
+                        <li><a class="dropdown-item active" href="reports.html"><i class="bi bi-graph-up me-2"></i>التقارير</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="logout()"><i class="bi bi-box-arrow-right me-2"></i>تسجيل الخروج</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container-fluid my-4">
+        <!-- فلاتر التقارير -->
+        <div class="filter-section">
+            <div class="row align-items-center">
+                <div class="col-md-3">
+                    <label class="form-label">الفترة الزمنية</label>
+                    <select class="form-select" id="timeRange">
+                        <option value="7">آخر 7 أيام</option>
+                        <option value="30" selected>آخر 30 يوم</option>
+                        <option value="90">آخر 3 أشهر</option>
+                        <option value="365">آخر سنة</option>
+                        <option value="custom">مخصص</option>
+                    </select>
+                </div>
+                <div class="col-md-3" id="customDateRange" style="display: none;">
+                    <label class="form-label">من تاريخ</label>
+                    <input type="date" class="form-control" id="startDate">
+                </div>
+                <div class="col-md-3" id="customDateRangeEnd" style="display: none;">
+                    <label class="form-label">إلى تاريخ</label>
+                    <input type="date" class="form-control" id="endDate">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">نوع التقرير</label>
+                    <select class="form-select" id="reportType">
+                        <option value="overview">نظرة عامة</option>
+                        <option value="appointments">المواعيد</option>
+                        <option value="doctors">الأطباء</option>
+                        <option value="patients">المرضى</option>
+                        <option value="revenue">الإيرادات</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <button class="btn btn-primary" onclick="generateReport()">
+                        <i class="bi bi-graph-up me-2"></i>توليد التقرير
+                    </button>
+                    <button class="btn btn-outline-secondary me-2" onclick="resetFilters()">
+                        <i class="bi bi-arrow-clockwise me-2"></i>إعادة تعيين
+                    </button>
+                </div>
+                <div class="col-md-6 text-end">
+                    <button class="export-btn" onclick="exportReport()">
+                        <i class="bi bi-download me-2"></i>تصدير التقرير
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- الإحصائيات الرئيسية -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="stats-number" id="totalAppointments">0</div>
+                    <div>إجمالي المواعيد</div>
+                    <small id="appointmentsTrend" class="mt-2 d-block">
+                        <i class="bi bi-arrow-up"></i> +0%
+                    </small>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="stats-number" id="totalRevenue">0</div>
+                    <div>إجمالي الإيرادات (ريال)</div>
+                    <small id="revenueTrend" class="mt-2 d-block">
+                        <i class="bi bi-arrow-up"></i> +0%
+                    </small>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="stats-number" id="totalPatients">0</div>
+                    <div>إجمالي المرضى</div>
+                    <small id="patientsTrend" class="mt-2 d-block">
+                        <i class="bi bi-arrow-up"></i> +0%
+                    </small>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="stats-number" id="totalDoctors">0</div>
+                    <div>إجمالي الأطباء</div>
+                    <small id="doctorsTrend" class="mt-2 d-block">
+                        <i class="bi bi-arrow-up"></i> +0%
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- الرسوم البيانية -->
+        <div class="row mb-4">
+            <div class="col-lg-8">
+                <div class="admin-card">
+                    <h5 class="mb-3">إحصائيات المواعيد الشهرية</h5>
+                    <div class="chart-container">
+                        <canvas id="appointmentsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="admin-card">
+                    <h5 class="mb-3">توزيع التخصصات</h5>
+                    <div class="chart-container">
+                        <canvas id="specializationsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-lg-6">
+                <div class="admin-card">
+                    <h5 class="mb-3">الإيرادات الشهرية</h5>
+                    <div class="chart-container">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="admin-card">
+                    <h5 class="mb-3">حالة المواعيد</h5>
+                    <div class="chart-container">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- تقارير مفصلة -->
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="admin-card">
+                    <h5 class="mb-3">أفضل الأطباء</h5>
+                    <div id="topDoctors">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">جاري التحميل...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="admin-card">
+                    <h5 class="mb-3">أكثر التخصصات طلباً</h5>
+                    <div id="popularSpecializations">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">جاري التحميل...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- تقارير إضافية -->
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="admin-card">
+                    <h5 class="mb-3">إحصائيات المواعيد اليومية</h5>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="metric-card">
+                                <div class="metric-value" id="todayAppointments">0</div>
+                                <div class="metric-label">مواعيد اليوم</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="metric-card">
+                                <div class="metric-value" id="tomorrowAppointments">0</div>
+                                <div class="metric-label">مواعيد الغد</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="admin-card">
+                    <h5 class="mb-3">معدلات الإنجاز</h5>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="metric-card">
+                                <div class="metric-value" id="completionRate">0%</div>
+                                <div class="metric-label">معدل الإنجاز</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="metric-card">
+                                <div class="metric-value" id="cancellationRate">0%</div>
+                                <div class="metric-label">معدل الإلغاء</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="admin-card">
+                    <h5 class="mb-3">رضا العملاء</h5>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="metric-card">
+                                <div class="metric-value" id="averageRating">0</div>
+                                <div class="metric-label">متوسط التقييم</div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="metric-card">
+                                <div class="metric-value" id="totalReviews">0</div>
+                                <div class="metric-label">إجمالي التقييمات</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+        let appointmentsChart, specializationsChart, revenueChart, statusChart;
+
+        // تحميل البيانات عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            loadNotifications();
+            setupEventListeners();
+            generateReport();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('timeRange').addEventListener('change', function() {
+                const customRange = document.getElementById('customDateRange');
+                const customRangeEnd = document.getElementById('customDateRangeEnd');
+                
+                if (this.value === 'custom') {
+                    customRange.style.display = 'block';
+                    customRangeEnd.style.display = 'block';
+                } else {
+                    customRange.style.display = 'none';
+                    customRangeEnd.style.display = 'none';
+                }
+            });
+        }
+
+        function loadUserData() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.full_name) {
+                document.getElementById('userName').textContent = user.full_name;
+            }
+        }
+
+        async function generateReport() {
+            const timeRange = document.getElementById('timeRange').value;
+            const reportType = document.getElementById('reportType').value;
+            
+            let startDate, endDate;
+            
+            if (timeRange === 'custom') {
+                startDate = document.getElementById('startDate').value;
+                endDate = document.getElementById('endDate').value;
+            } else {
+                const days = parseInt(timeRange);
+                endDate = new Date().toISOString().split('T')[0];
+                startDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            }
+
+            try {
+                // تحميل الإحصائيات العامة
+                await loadGeneralStatistics(startDate, endDate);
+                
+                // تحميل الرسوم البيانية
+                await loadCharts(startDate, endDate);
+                
+                // تحميل التقارير المفصلة
+                await loadDetailedReports(startDate, endDate);
+                
+            } catch (error) {
+                console.error('Error generating report:', error);
+                showAlert('حدث خطأ في توليد التقرير', 'danger');
+            }
+        }
+
+        async function loadGeneralStatistics(startDate, endDate) {
+            try {
+                const response = await fetch(`../api/reports.php?action=general&start_date=${startDate}&end_date=${endDate}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.statistics;
+                    
+                    document.getElementById('totalAppointments').textContent = stats.total_appointments || 0;
+                    document.getElementById('totalRevenue').textContent = (stats.total_revenue || 0).toLocaleString();
+                    document.getElementById('totalPatients').textContent = stats.total_patients || 0;
+                    document.getElementById('totalDoctors').textContent = stats.total_doctors || 0;
+                    
+                    // تحديث الاتجاهات
+                    updateTrend('appointmentsTrend', stats.appointments_trend || 0);
+                    updateTrend('revenueTrend', stats.revenue_trend || 0);
+                    updateTrend('patientsTrend', stats.patients_trend || 0);
+                    updateTrend('doctorsTrend', stats.doctors_trend || 0);
+                    
+                    // الإحصائيات الإضافية
+                    document.getElementById('todayAppointments').textContent = stats.today_appointments || 0;
+                    document.getElementById('tomorrowAppointments').textContent = stats.tomorrow_appointments || 0;
+                    document.getElementById('completionRate').textContent = (stats.completion_rate || 0) + '%';
+                    document.getElementById('cancellationRate').textContent = (stats.cancellation_rate || 0) + '%';
+                    document.getElementById('averageRating').textContent = (stats.average_rating || 0).toFixed(1);
+                    document.getElementById('totalReviews').textContent = stats.total_reviews || 0;
+                }
+            } catch (error) {
+                console.error('Error loading general statistics:', error);
+            }
+        }
+
+        function updateTrend(elementId, trend) {
+            const element = document.getElementById(elementId);
+            const icon = element.querySelector('i');
+            
+            if (trend > 0) {
+                icon.className = 'bi bi-arrow-up trend-up';
+                element.innerHTML = `<i class="bi bi-arrow-up trend-up"></i> +${trend}%`;
+            } else if (trend < 0) {
+                icon.className = 'bi bi-arrow-down trend-down';
+                element.innerHTML = `<i class="bi bi-arrow-down trend-down"></i> ${trend}%`;
+            } else {
+                icon.className = 'bi bi-dash';
+                element.innerHTML = `<i class="bi bi-dash"></i> 0%`;
+            }
+        }
+
+        async function loadCharts(startDate, endDate) {
+            try {
+                const response = await fetch(`../api/reports.php?action=charts&start_date=${startDate}&end_date=${endDate}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    // رسم بياني للمواعيد الشهرية
+                    createAppointmentsChart(data.charts.monthly_appointments);
+                    
+                    // رسم بياني للتخصصات
+                    createSpecializationsChart(data.charts.specializations);
+                    
+                    // رسم بياني للإيرادات
+                    createRevenueChart(data.charts.monthly_revenue);
+                    
+                    // رسم بياني لحالة المواعيد
+                    createStatusChart(data.charts.appointment_status);
+                }
+            } catch (error) {
+                console.error('Error loading charts:', error);
+            }
+        }
+
+        function createAppointmentsChart(data) {
+            const ctx = document.getElementById('appointmentsChart').getContext('2d');
+            
+            if (appointmentsChart) {
+                appointmentsChart.destroy();
+            }
+            
+            appointmentsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'المواعيد',
+                        data: data.values,
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function createSpecializationsChart(data) {
+            const ctx = document.getElementById('specializationsChart').getContext('2d');
+            
+            if (specializationsChart) {
+                specializationsChart.destroy();
+            }
+            
+            specializationsChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.values,
+                        backgroundColor: [
+                            '#10B981',
+                            '#3B82F6',
+                            '#F59E0B',
+                            '#EF4444',
+                            '#8B5CF6',
+                            '#06B6D4'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        function createRevenueChart(data) {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            
+            if (revenueChart) {
+                revenueChart.destroy();
+            }
+            
+            revenueChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'الإيرادات (ريال)',
+                        data: data.values,
+                        backgroundColor: '#3B82F6',
+                        borderColor: '#1D4ED8',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function createStatusChart(data) {
+            const ctx = document.getElementById('statusChart').getContext('2d');
+            
+            if (statusChart) {
+                statusChart.destroy();
+            }
+            
+            statusChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.values,
+                        backgroundColor: [
+                            '#F59E0B',
+                            '#10B981',
+                            '#3B82F6',
+                            '#EF4444'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        async function loadDetailedReports(startDate, endDate) {
+            try {
+                // تحميل أفضل الأطباء
+                const doctorsResponse = await fetch(`../api/reports.php?action=top-doctors&start_date=${startDate}&end_date=${endDate}`);
+                const doctorsData = await doctorsResponse.json();
+                
+                if (doctorsData.success) {
+                    displayTopDoctors(doctorsData.doctors);
+                }
+                
+                // تحميل التخصصات الشائعة
+                const specializationsResponse = await fetch(`../api/reports.php?action=popular-specializations&start_date=${startDate}&end_date=${endDate}`);
+                const specializationsData = await specializationsResponse.json();
+                
+                if (specializationsData.success) {
+                    displayPopularSpecializations(specializationsData.specializations);
+                }
+                
+            } catch (error) {
+                console.error('Error loading detailed reports:', error);
+            }
+        }
+
+        function displayTopDoctors(doctors) {
+            const container = document.getElementById('topDoctors');
+            
+            if (doctors.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center">لا توجد بيانات</p>';
+                return;
+            }
+            
+            container.innerHTML = doctors.map((doctor, index) => `
+                <div class="report-card">
+                    <div class="row align-items-center">
+                        <div class="col-2">
+                            <div class="text-center">
+                                <span class="badge bg-primary rounded-pill">${index + 1}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h6 class="mb-1">د. ${doctor.full_name}</h6>
+                            <small class="text-muted">${doctor.specialization_name}</small>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="metric-value" style="font-size: 1.2rem;">${doctor.appointments_count}</div>
+                            <div class="metric-label">موعد</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayPopularSpecializations(specializations) {
+            const container = document.getElementById('popularSpecializations');
+            
+            if (specializations.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center">لا توجد بيانات</p>';
+                return;
+            }
+            
+            container.innerHTML = specializations.map((spec, index) => `
+                <div class="report-card">
+                    <div class="row align-items-center">
+                        <div class="col-2">
+                            <div class="text-center">
+                                <span class="badge bg-primary rounded-pill">${index + 1}</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h6 class="mb-1">${spec.name}</h6>
+                            <small class="text-muted">${spec.doctors_count} طبيب</small>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="metric-value" style="font-size: 1.2rem;">${spec.appointments_count}</div>
+                            <div class="metric-label">موعد</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function resetFilters() {
+            document.getElementById('timeRange').value = '30';
+            document.getElementById('reportType').value = 'overview';
+            document.getElementById('customDateRange').style.display = 'none';
+            document.getElementById('customDateRangeEnd').style.display = 'none';
+            generateReport();
+        }
+
+        function exportReport() {
+            // تصدير التقرير إلى PDF أو Excel
+            showAlert('ميزة التصدير قيد التطوير', 'info');
+        }
+
+        async function loadNotifications() {
+            try {
+                const response = await fetch('../api/notifications.php?action=my-notifications&limit=5');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const badge = document.getElementById('notificationBadge');
+                    const container = document.getElementById('notificationsList');
+                    
+                    const unreadCount = data.notifications.filter(n => !n.is_read).length;
+                    badge.textContent = unreadCount;
+                    badge.style.display = unreadCount > 0 ? 'block' : 'none';
+                    
+                    if (data.notifications.length > 0) {
+                        container.innerHTML = data.notifications.map(notification => `
+                            <li class="dropdown-item ${notification.is_read ? '' : 'bg-light'}">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="mb-1 small">${notification.title}</h6>
+                                        <p class="mb-0 small text-muted">${notification.message}</p>
+                                    </div>
+                                    <small class="text-muted">${notification.time_ago}</small>
+                                </div>
+                            </li>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
+
+        function showAlert(message, type) {
+            const alertContainer = document.createElement('div');
+            alertContainer.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertContainer.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertContainer.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertContainer);
+            
+            setTimeout(() => {
+                if (alertContainer.parentNode) {
+                    alertContainer.parentNode.removeChild(alertContainer);
+                }
+            }, 5000);
+        }
+
+        function logout() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                localStorage.removeItem('user');
+                window.location.href = '../login.html';
+            }
+        }
+    </script>
+</body>
+</html>

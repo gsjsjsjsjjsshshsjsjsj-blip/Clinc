@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الأطباء - شفاء</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .admin-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .doctor-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .doctor-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .doctor-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10B981, #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .specialization-badge {
+            background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .rating-stars {
+            color: #F59E0B;
+            font-size: 1.2rem;
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        .search-box {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .search-box:focus {
+            border-color: #10B981;
+            box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.25);
+        }
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- شريط التنقل -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold fs-4 text-primary" href="../index.html">
+                <i class="bi bi-activity"></i> شفاء - الإدارة
+            </a>
+            <div class="ms-auto d-flex align-items-center">
+                <div class="dropdown me-3">
+                    <button class="btn btn-outline-primary position-relative" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-bell-fill"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notificationBadge">
+                            0
+                        </span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" style="width: 300px;">
+                        <li><h6 class="dropdown-header">الإشعارات</h6></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <div id="notificationsList">
+                            <li class="dropdown-item text-center text-muted">لا توجد إشعارات</li>
+                        </div>
+                    </ul>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> <span id="userName">المدير</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="dashboard.html"><i class="bi bi-speedometer2 me-2"></i>لوحة التحكم</a></li>
+                        <li><a class="dropdown-item" href="users.html"><i class="bi bi-people me-2"></i>إدارة المستخدمين</a></li>
+                        <li><a class="dropdown-item active" href="doctors.html"><i class="bi bi-person-badge me-2"></i>إدارة الأطباء</a></li>
+                        <li><a class="dropdown-item" href="appointments.html"><i class="bi bi-calendar-check me-2"></i>إدارة المواعيد</a></li>
+                        <li><a class="dropdown-item" href="reports.html"><i class="bi bi-graph-up me-2"></i>التقارير</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="logout()"><i class="bi bi-box-arrow-right me-2"></i>تسجيل الخروج</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container-fluid my-4">
+        <!-- إحصائيات سريعة -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="stats-number" id="totalDoctors">0</div>
+                    <div>إجمالي الأطباء</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="stats-number" id="activeDoctors">0</div>
+                    <div>الأطباء النشطين</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="stats-number" id="specializations">0</div>
+                    <div>التخصصات</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="stats-number" id="avgRating">0</div>
+                    <div>متوسط التقييم</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- أدوات البحث والفلترة -->
+        <div class="admin-card">
+            <div class="row align-items-center mb-4">
+                <div class="col-md-6">
+                    <h4 class="mb-0">إدارة الأطباء</h4>
+                    <p class="text-muted mb-0">إدارة جميع الأطباء والتخصصات في النظام</p>
+                </div>
+                <div class="col-md-6 text-end">
+                    <button class="btn btn-primary" onclick="showAddDoctorModal()">
+                        <i class="bi bi-person-plus me-2"></i>إضافة طبيب جديد
+                    </button>
+                </div>
+            </div>
+
+            <!-- شريط البحث والفلترة -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="position-relative">
+                        <input type="text" class="form-control search-box" id="searchInput" placeholder="البحث عن الأطباء...">
+                        <i class="bi bi-search position-absolute top-50 end-0 translate-middle-y me-3 text-muted"></i>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="specializationFilter">
+                        <option value="">جميع التخصصات</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" id="cityFilter">
+                        <option value="">جميع المدن</option>
+                        <option value="riyadh">الرياض</option>
+                        <option value="jeddah">جدة</option>
+                        <option value="dammam">الدمام</option>
+                        <option value="makkah">مكة المكرمة</option>
+                        <option value="medina">المدينة المنورة</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">
+                        <i class="bi bi-arrow-clockwise"></i> إعادة تعيين
+                    </button>
+                </div>
+            </div>
+
+            <!-- قائمة الأطباء -->
+            <div id="doctorsList">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">جاري التحميل...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- التصفح -->
+            <nav aria-label="تصفح الأطباء" class="mt-4">
+                <ul class="pagination justify-content-center" id="pagination">
+                    <!-- سيتم إدراج أزرار التصفح هنا -->
+                </ul>
+            </nav>
+        </div>
+    </main>
+
+    <!-- مودال إضافة طبيب -->
+    <div class="modal fade" id="addDoctorModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">إضافة طبيب جديد</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addDoctorForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">الاسم الكامل</label>
+                                <input type="text" class="form-control" name="full_name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">البريد الإلكتروني</label>
+                                <input type="email" class="form-control" name="email" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">رقم الهاتف</label>
+                                <input type="tel" class="form-control" name="phone">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">تاريخ الميلاد</label>
+                                <input type="date" class="form-control" name="date_of_birth">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">الجنس</label>
+                                <select class="form-select" name="gender" required>
+                                    <option value="">اختر الجنس</option>
+                                    <option value="male">ذكر</option>
+                                    <option value="female">أنثى</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">التخصص</label>
+                                <select class="form-select" name="specialization_id" required>
+                                    <option value="">اختر التخصص</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">رقم الترخيص</label>
+                                <input type="text" class="form-control" name="license_number" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">سنوات الخبرة</label>
+                                <input type="number" class="form-control" name="experience_years" min="0" max="50">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">الرسوم (ريال)</label>
+                                <input type="number" class="form-control" name="consultation_fee" min="0" step="0.01">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">المدينة</label>
+                                <select class="form-select" name="city" required>
+                                    <option value="">اختر المدينة</option>
+                                    <option value="riyadh">الرياض</option>
+                                    <option value="jeddah">جدة</option>
+                                    <option value="dammam">الدمام</option>
+                                    <option value="makkah">مكة المكرمة</option>
+                                    <option value="medina">المدينة المنورة</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">الوصف المهني</label>
+                                <textarea class="form-control" name="bio" rows="3"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">كلمة المرور</label>
+                                <input type="password" class="form-control" name="password" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="addDoctor()">إضافة الطبيب</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال تعديل الطبيب -->
+    <div class="modal fade" id="editDoctorModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">تعديل بيانات الطبيب</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editDoctorForm">
+                        <input type="hidden" name="doctor_id" id="editDoctorId">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">الاسم الكامل</label>
+                                <input type="text" class="form-control" name="full_name" id="editFullName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">البريد الإلكتروني</label>
+                                <input type="email" class="form-control" name="email" id="editEmail" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">رقم الهاتف</label>
+                                <input type="tel" class="form-control" name="phone" id="editPhone">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">التخصص</label>
+                                <select class="form-select" name="specialization_id" id="editSpecialization" required>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">رقم الترخيص</label>
+                                <input type="text" class="form-control" name="license_number" id="editLicenseNumber" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">سنوات الخبرة</label>
+                                <input type="number" class="form-control" name="experience_years" id="editExperienceYears" min="0" max="50">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">الرسوم (ريال)</label>
+                                <input type="number" class="form-control" name="consultation_fee" id="editConsultationFee" min="0" step="0.01">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">المدينة</label>
+                                <select class="form-select" name="city" id="editCity" required>
+                                    <option value="riyadh">الرياض</option>
+                                    <option value="jeddah">جدة</option>
+                                    <option value="dammam">الدمام</option>
+                                    <option value="makkah">مكة المكرمة</option>
+                                    <option value="medina">المدينة المنورة</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">الوصف المهني</label>
+                                <textarea class="form-control" name="bio" id="editBio" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="updateDoctor()">حفظ التغييرات</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/app.js"></script>
+    <script>
+        let currentPage = 1;
+        let totalPages = 1;
+        let currentFilters = {};
+
+        // تحميل البيانات عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
+            loadDoctors();
+            loadStatistics();
+            loadSpecializations();
+            loadNotifications();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // البحث
+            document.getElementById('searchInput').addEventListener('input', debounce(handleSearch, 500));
+            
+            // الفلاتر
+            document.getElementById('specializationFilter').addEventListener('change', handleFilterChange);
+            document.getElementById('cityFilter').addEventListener('change', handleFilterChange);
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function loadUserData() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.full_name) {
+                document.getElementById('userName').textContent = user.full_name;
+            }
+        }
+
+        async function loadStatistics() {
+            try {
+                const response = await fetch('../api/doctors.php?action=statistics');
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('totalDoctors').textContent = data.statistics.total_doctors || 0;
+                    document.getElementById('activeDoctors').textContent = data.statistics.active_doctors || 0;
+                    document.getElementById('specializations').textContent = data.statistics.specializations_count || 0;
+                    document.getElementById('avgRating').textContent = (data.statistics.average_rating || 0).toFixed(1);
+                }
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
+
+        async function loadSpecializations() {
+            try {
+                const response = await fetch('../api/doctors.php?action=specializations');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const specializationFilter = document.getElementById('specializationFilter');
+                    const addSpecializationSelect = document.querySelector('#addDoctorForm select[name="specialization_id"]');
+                    const editSpecializationSelect = document.querySelector('#editDoctorForm select[name="specialization_id"]');
+                    
+                    data.specializations.forEach(spec => {
+                        const option = `<option value="${spec.id}">${spec.name}</option>`;
+                        specializationFilter.innerHTML += option;
+                        addSpecializationSelect.innerHTML += option;
+                        editSpecializationSelect.innerHTML += option;
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading specializations:', error);
+            }
+        }
+
+        async function loadDoctors(page = 1) {
+            try {
+                const params = new URLSearchParams({
+                    action: 'all',
+                    page: page,
+                    limit: 10,
+                    ...currentFilters
+                });
+
+                const response = await fetch(`../api/doctors.php?${params}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayDoctors(data.doctors);
+                    updatePagination(data.pagination);
+                    currentPage = page;
+                    totalPages = data.pagination.total_pages;
+                }
+            } catch (error) {
+                console.error('Error loading doctors:', error);
+                showAlert('خطأ في تحميل الأطباء', 'danger');
+            }
+        }
+
+        function displayDoctors(doctors) {
+            const container = document.getElementById('doctorsList');
+            
+            if (doctors.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="bi bi-person-badge fs-1 text-muted mb-3"></i>
+                        <h5 class="text-muted">لا توجد أطباء</h5>
+                        <p class="text-muted">لم يتم العثور على أطباء مطابقين للبحث</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = doctors.map(doctor => `
+                <div class="doctor-card">
+                    <div class="row align-items-center">
+                        <div class="col-md-1">
+                            <div class="doctor-avatar">
+                                ${doctor.full_name.charAt(0)}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <h6 class="mb-1">د. ${doctor.full_name}</h6>
+                            <small class="text-muted">${doctor.email}</small>
+                            <div class="mt-1">
+                                <span class="specialization-badge">${doctor.specialization_name}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="rating-stars">
+                                ${generateStars(doctor.average_rating || 0)}
+                            </div>
+                            <small class="text-muted">(${doctor.reviews_count || 0} تقييم)</small>
+                        </div>
+                        <div class="col-md-2">
+                            <small class="text-muted">
+                                <i class="bi bi-geo-alt me-1"></i>${getCityName(doctor.city)}
+                            </small>
+                            <br>
+                            <small class="text-muted">
+                                <i class="bi bi-currency-exchange me-1"></i>${doctor.consultation_fee} ريال
+                            </small>
+                        </div>
+                        <div class="col-md-2">
+                            <small class="text-muted">
+                                <i class="bi bi-award me-1"></i>${doctor.experience_years} سنة خبرة
+                            </small>
+                            <br>
+                            <small class="text-muted">
+                                <i class="bi bi-calendar me-1"></i>${formatDate(doctor.created_at)}
+                            </small>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-outline-primary action-btn" onclick="editDoctor(${doctor.id})" title="تعديل">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-info action-btn" onclick="viewDoctorSchedule(${doctor.id})" title="الجدول">
+                                    <i class="bi bi-calendar3"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger action-btn" onclick="deleteDoctor(${doctor.id})" title="حذف">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function generateStars(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 !== 0;
+            let stars = '';
+            
+            for (let i = 0; i < fullStars; i++) {
+                stars += '<i class="bi bi-star-fill"></i>';
+            }
+            
+            if (hasHalfStar) {
+                stars += '<i class="bi bi-star-half"></i>';
+            }
+            
+            const emptyStars = 5 - Math.ceil(rating);
+            for (let i = 0; i < emptyStars; i++) {
+                stars += '<i class="bi bi-star"></i>';
+            }
+            
+            return stars;
+        }
+
+        function getCityName(city) {
+            const cities = {
+                'riyadh': 'الرياض',
+                'jeddah': 'جدة',
+                'dammam': 'الدمام',
+                'makkah': 'مكة المكرمة',
+                'medina': 'المدينة المنورة'
+            };
+            return cities[city] || city;
+        }
+
+        function updatePagination(pagination) {
+            const container = document.getElementById('pagination');
+            let html = '';
+
+            // زر السابق
+            html += `
+                <li class="page-item ${pagination.current_page === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="loadDoctors(${pagination.current_page - 1})">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            `;
+
+            // أرقام الصفحات
+            for (let i = 1; i <= pagination.total_pages; i++) {
+                if (i === pagination.current_page || i === 1 || i === pagination.total_pages || 
+                    (i >= pagination.current_page - 2 && i <= pagination.current_page + 2)) {
+                    html += `
+                        <li class="page-item ${i === pagination.current_page ? 'active' : ''}">
+                            <a class="page-link" href="#" onclick="loadDoctors(${i})">${i}</a>
+                        </li>
+                    `;
+                } else if (i === pagination.current_page - 3 || i === pagination.current_page + 3) {
+                    html += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                }
+            }
+
+            // زر التالي
+            html += `
+                <li class="page-item ${pagination.current_page === pagination.total_pages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="loadDoctors(${pagination.current_page + 1})">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function handleSearch() {
+            const searchTerm = document.getElementById('searchInput').value;
+            currentFilters.search = searchTerm;
+            loadDoctors(1);
+        }
+
+        function handleFilterChange() {
+            currentFilters.specialization_id = document.getElementById('specializationFilter').value;
+            currentFilters.city = document.getElementById('cityFilter').value;
+            loadDoctors(1);
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('specializationFilter').value = '';
+            document.getElementById('cityFilter').value = '';
+            currentFilters = {};
+            loadDoctors(1);
+        }
+
+        function showAddDoctorModal() {
+            const modal = new bootstrap.Modal(document.getElementById('addDoctorModal'));
+            modal.show();
+        }
+
+        async function addDoctor() {
+            const form = document.getElementById('addDoctorForm');
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch('../api/doctors.php?action=create', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('تم إضافة الطبيب بنجاح', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('addDoctorModal')).hide();
+                    form.reset();
+                    loadDoctors(currentPage);
+                } else {
+                    showAlert(data.error || 'حدث خطأ في إضافة الطبيب', 'danger');
+                }
+            } catch (error) {
+                console.error('Error adding doctor:', error);
+                showAlert('حدث خطأ في إضافة الطبيب', 'danger');
+            }
+        }
+
+        async function editDoctor(doctorId) {
+            try {
+                const response = await fetch(`../api/doctors.php?action=get&id=${doctorId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const doctor = data.doctor;
+                    document.getElementById('editDoctorId').value = doctor.id;
+                    document.getElementById('editFullName').value = doctor.full_name;
+                    document.getElementById('editEmail').value = doctor.email;
+                    document.getElementById('editPhone').value = doctor.phone || '';
+                    document.getElementById('editSpecialization').value = doctor.specialization_id;
+                    document.getElementById('editLicenseNumber').value = doctor.license_number;
+                    document.getElementById('editExperienceYears').value = doctor.experience_years || '';
+                    document.getElementById('editConsultationFee').value = doctor.consultation_fee || '';
+                    document.getElementById('editCity').value = doctor.city;
+                    document.getElementById('editBio').value = doctor.bio || '';
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('editDoctorModal'));
+                    modal.show();
+                }
+            } catch (error) {
+                console.error('Error loading doctor:', error);
+                showAlert('حدث خطأ في تحميل بيانات الطبيب', 'danger');
+            }
+        }
+
+        async function updateDoctor() {
+            const form = document.getElementById('editDoctorForm');
+            const formData = new FormData(form);
+            const doctorId = formData.get('doctor_id');
+            
+            try {
+                const response = await fetch(`../api/doctors.php?action=update&id=${doctorId}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('تم تحديث الطبيب بنجاح', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('editDoctorModal')).hide();
+                    loadDoctors(currentPage);
+                } else {
+                    showAlert(data.error || 'حدث خطأ في تحديث الطبيب', 'danger');
+                }
+            } catch (error) {
+                console.error('Error updating doctor:', error);
+                showAlert('حدث خطأ في تحديث الطبيب', 'danger');
+            }
+        }
+
+        async function deleteDoctor(doctorId) {
+            if (confirm('هل أنت متأكد من حذف هذا الطبيب؟')) {
+                try {
+                    const response = await fetch(`../api/doctors.php?action=delete&id=${doctorId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        showAlert('تم حذف الطبيب بنجاح', 'success');
+                        loadDoctors(currentPage);
+                    } else {
+                        showAlert(data.error || 'حدث خطأ في حذف الطبيب', 'danger');
+                    }
+                } catch (error) {
+                    console.error('Error deleting doctor:', error);
+                    showAlert('حدث خطأ في حذف الطبيب', 'danger');
+                }
+            }
+        }
+
+        function viewDoctorSchedule(doctorId) {
+            // توجيه إلى صفحة إدارة الجدول
+            window.location.href = `doctor-schedule.html?id=${doctorId}`;
+        }
+
+        async function loadNotifications() {
+            try {
+                const response = await fetch('../api/notifications.php?action=my-notifications&limit=5');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const badge = document.getElementById('notificationBadge');
+                    const container = document.getElementById('notificationsList');
+                    
+                    const unreadCount = data.notifications.filter(n => !n.is_read).length;
+                    badge.textContent = unreadCount;
+                    badge.style.display = unreadCount > 0 ? 'block' : 'none';
+                    
+                    if (data.notifications.length > 0) {
+                        container.innerHTML = data.notifications.map(notification => `
+                            <li class="dropdown-item ${notification.is_read ? '' : 'bg-light'}">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="mb-1 small">${notification.title}</h6>
+                                        <p class="mb-0 small text-muted">${notification.message}</p>
+                                    </div>
+                                    <small class="text-muted">${notification.time_ago}</small>
+                                </div>
+                            </li>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ar-SA');
+        }
+
+        function showAlert(message, type) {
+            const alertContainer = document.createElement('div');
+            alertContainer.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertContainer.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertContainer.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertContainer);
+            
+            setTimeout(() => {
+                if (alertContainer.parentNode) {
+                    alertContainer.parentNode.removeChild(alertContainer);
+                }
+            }, 5000);
+        }
+
+        function logout() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                localStorage.removeItem('user');
+                window.location.href = '../login.html';
+            }
+        }
+    </script>
+</body>
+</html>
