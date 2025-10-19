@@ -64,6 +64,28 @@ A comprehensive medical appointment management system that connects patients wit
 - **Safari 14+**
 - **Edge 90+**
 
+## 🌐 **عرض مباشر / Live Demo**
+
+### **GitHub Pages (محدود)**
+- **الصفحة الرئيسية**: [index-github.html](https://yourusername.github.io/medical-appointment-system/index-github.html)
+- **تسجيل الدخول**: [login.html](https://yourusername.github.io/medical-appointment-system/login.html)
+- **إنشاء حساب**: [register.html](https://yourusername.github.io/medical-appointment-system/register.html)
+
+> **ملاحظة**: GitHub Pages لا يدعم PHP، لذلك لن تعمل الوظائف الخلفية. للاستخدام الكامل، قم بتحميل المشروع محلياً.
+
+### **عرض محلي كامل**
+```bash
+# تحميل المشروع
+git clone https://github.com/yourusername/medical-appointment-system.git
+cd medical-appointment-system
+
+# تشغيل الخادم المحلي
+php -S localhost:8000
+
+# زيارة الموقع
+# http://localhost:8000
+```
+
 ## التثبيت والإعداد / Installation & Setup
 
 ### 1. تحميل المشروع / Download Project
