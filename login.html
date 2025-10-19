@@ -38,14 +38,16 @@
                             <p class="text-muted">سجل دخولك لإدارة وحجز مواعيدك</p>
                         </div>
 
-                        <form>
+                        <div id="alertMessage" class="alert d-none" role="alert"></div>
+                        
+                        <form id="loginForm" onsubmit="handleLogin(event)">
                             <div class="form-floating mb-3">
-                                <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" required>
-                                <label for="floatingInput"><i class="bi bi-envelope-fill me-2"></i>البريد الإلكتروني</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
+                                <label for="email"><i class="bi bi-envelope-fill me-2"></i>البريد الإلكتروني</label>
                             </div>
                             <div class="form-floating mb-4">
-                                <input type="password" class="form-control" id="floatingPassword" placeholder="Password" required>
-                                <label for="floatingPassword"><i class="bi bi-lock-fill me-2"></i>كلمة المرور</label>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                                <label for="password"><i class="bi bi-lock-fill me-2"></i>كلمة المرور</label>
                             </div>
 
                             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -63,9 +65,53 @@
                             </div>
 
                             <div class="text-center">
-                                <p class="text-muted">ليس لديك حساب؟ <a href="#" class="text-decoration-none text-primary fw-bold">أنشئ حساباً جديداً</a></p>
+                                <p class="text-muted">ليس لديك حساب؟ <a href="register.html" class="text-decoration-none text-primary fw-bold">أنشئ حساباً جديداً</a></p>
                             </div>
                         </form>
+                        
+                        <script>
+                        async function handleLogin(event) {
+                            event.preventDefault();
+                            
+                            const alertDiv = document.getElementById('alertMessage');
+                            const form = event.target;
+                            const formData = new FormData(form);
+                            
+                            try {
+                                const response = await fetch('api/login.php', {
+                                    method: 'POST',
+                                    body: formData
+                                });
+                                
+                                const result = await response.json();
+                                
+                                if (result.success) {
+                                    alertDiv.className = 'alert alert-success';
+                                    alertDiv.textContent = result.message;
+                                    alertDiv.classList.remove('d-none');
+                                    
+                                    // توجيه المستخدم حسب دوره
+                                    setTimeout(() => {
+                                        if (result.role === 'patient') {
+                                            window.location.href = 'pages/patient/dashboard.php';
+                                        } else if (result.role === 'doctor') {
+                                            window.location.href = 'pages/doctor/dashboard.php';
+                                        } else if (result.role === 'admin') {
+                                            window.location.href = 'pages/admin/dashboard.php';
+                                        }
+                                    }, 1000);
+                                } else {
+                                    alertDiv.className = 'alert alert-danger';
+                                    alertDiv.textContent = result.message;
+                                    alertDiv.classList.remove('d-none');
+                                }
+                            } catch (error) {
+                                alertDiv.className = 'alert alert-danger';
+                                alertDiv.textContent = 'حدث خطأ في الاتصال بالخادم';
+                                alertDiv.classList.remove('d-none');
+                            }
+                        }
+                        </script>
                     </div>
                 </div>
 
