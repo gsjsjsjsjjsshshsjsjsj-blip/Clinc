@@ -38,7 +38,7 @@
                             <p class="text-muted">سجل دخولك لإدارة وحجز مواعيدك</p>
                         </div>
 
-                        <form>
+                        <form id="loginForm">
                             <div class="form-floating mb-3">
                                 <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" required>
                                 <label for="floatingInput"><i class="bi bi-envelope-fill me-2"></i>البريد الإلكتروني</label>
@@ -59,13 +59,19 @@
                             </div>
 
                             <div class="d-grid mb-4">
-                                <button class="btn btn-primary btn-lg" type="submit">تسجيل الدخول</button>
+                                <button class="btn btn-primary btn-lg" type="submit" id="loginBtn">
+                                    <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                                    تسجيل الدخول
+                                </button>
                             </div>
 
                             <div class="text-center">
-                                <p class="text-muted">ليس لديك حساب؟ <a href="#" class="text-decoration-none text-primary fw-bold">أنشئ حساباً جديداً</a></p>
+                                <p class="text-muted">ليس لديك حساب؟ <a href="register.html" class="text-decoration-none text-primary fw-bold">أنشئ حساباً جديداً</a></p>
                             </div>
                         </form>
+
+                        <!-- رسائل التنبيه -->
+                        <div id="alertContainer" class="mt-3"></div>
                     </div>
                 </div>
 
@@ -84,5 +90,75 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('floatingInput').value;
+            const password = document.getElementById('floatingPassword').value;
+            const loginBtn = document.getElementById('loginBtn');
+            const spinner = loginBtn.querySelector('.spinner-border');
+            
+            // إظهار حالة التحميل
+            loginBtn.disabled = true;
+            spinner.classList.remove('d-none');
+            
+            try {
+                const response = await fetch('api/auth.php?action=login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showAlert('success', 'تم تسجيل الدخول بنجاح!');
+                    
+                    // حفظ بيانات المستخدم في localStorage
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // توجيه المستخدم حسب دوره
+                    setTimeout(() => {
+                        if (data.user.role === 'admin') {
+                            window.location.href = 'admin/dashboard.html';
+                        } else if (data.user.role === 'doctor') {
+                            window.location.href = 'doctor/dashboard.html';
+                        } else {
+                            window.location.href = 'patient/dashboard.html';
+                        }
+                    }, 1500);
+                } else {
+                    showAlert('danger', data.error || 'حدث خطأ في تسجيل الدخول');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('danger', 'حدث خطأ في الاتصال بالخادم');
+            } finally {
+                // إخفاء حالة التحميل
+                loginBtn.disabled = false;
+                spinner.classList.add('d-none');
+            }
+        });
+        
+        function showAlert(type, message) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alertDiv);
+        }
+    </script>
 </body>
 </html>

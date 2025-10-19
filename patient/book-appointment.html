@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حجز موعد - شفاء</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .booking-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .doctor-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .doctor-card:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-color: #10B981;
+        }
+        .doctor-card.selected {
+            border-color: #10B981;
+            background-color: #f0fdfa;
+        }
+        .time-slot {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            margin: 0.25rem;
+            display: inline-block;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .time-slot:hover {
+            background-color: #e9ecef;
+        }
+        .time-slot.selected {
+            background-color: #10B981;
+            color: white;
+            border-color: #10B981;
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .step {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 0.5rem;
+            font-weight: bold;
+        }
+        .step.active {
+            background-color: #10B981;
+            color: white;
+        }
+        .step.completed {
+            background-color: #28a745;
+            color: white;
+        }
+        .step-line {
+            width: 60px;
+            height: 2px;
+            background-color: #e9ecef;
+            margin: 0 0.5rem;
+            align-self: center;
+        }
+        .step-line.completed {
+            background-color: #28a745;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- شريط التنقل -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4 text-primary" href="../index.html">
+                <i class="bi bi-activity"></i> شفاء
+            </a>
+            <div class="ms-auto">
+                <a href="dashboard.html" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-right me-2"></i>العودة للوحة التحكم
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <!-- مؤشر الخطوات -->
+        <div class="step-indicator">
+            <div class="step active" id="step1">1</div>
+            <div class="step-line"></div>
+            <div class="step" id="step2">2</div>
+            <div class="step-line"></div>
+            <div class="step" id="step3">3</div>
+        </div>
+
+        <div class="row">
+            <!-- الخطوة 1: اختيار التخصص -->
+            <div class="col-lg-8" id="step1Content">
+                <div class="booking-card">
+                    <h4 class="mb-4">اختر التخصص الطبي</h4>
+                    <div class="row" id="specializationsList">
+                        <div class="col-12 text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">جاري التحميل...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الخطوة 2: اختيار الطبيب -->
+            <div class="col-lg-8 d-none" id="step2Content">
+                <div class="booking-card">
+                    <h4 class="mb-4">اختر الطبيب</h4>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" id="doctorSearch" placeholder="البحث عن طبيب...">
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="cityFilter">
+                                <option value="">جميع المدن</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="genderFilter">
+                                <option value="">جميع الأجناس</option>
+                                <option value="male">ذكر</option>
+                                <option value="female">أنثى</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="doctorsList">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">جاري التحميل...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- الخطوة 3: اختيار الوقت والتاريخ -->
+            <div class="col-lg-8 d-none" id="step3Content">
+                <div class="booking-card">
+                    <h4 class="mb-4">اختر التاريخ والوقت</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">التاريخ</label>
+                            <input type="date" class="form-control" id="appointmentDate" min="">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">نوع الاستشارة</label>
+                            <select class="form-select" id="consultationType">
+                                <option value="in_person">حضوري</option>
+                                <option value="video_call">مكالمة فيديو</option>
+                                <option value="phone_call">مكالمة هاتفية</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label class="form-label">الأوقات المتاحة</label>
+                        <div id="availableTimes">
+                            <div class="text-center py-4 text-muted">
+                                اختر تاريخاً لعرض الأوقات المتاحة
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label class="form-label">ملاحظات (اختياري)</label>
+                        <textarea class="form-control" id="appointmentNotes" rows="3" placeholder="اكتب أي ملاحظات أو أسئلة تريد مناقشتها مع الطبيب..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ملخص الحجز -->
+            <div class="col-lg-4">
+                <div class="booking-card">
+                    <h5 class="mb-4">ملخص الحجز</h5>
+                    <div id="bookingSummary">
+                        <div class="text-center text-muted py-4">
+                            <i class="bi bi-calendar-plus fs-1"></i>
+                            <p class="mt-2">لم يتم اختيار موعد بعد</p>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 mt-4">
+                        <button class="btn btn-primary btn-lg" id="bookAppointmentBtn" disabled>
+                            <i class="bi bi-calendar-check me-2"></i>حجز الموعد
+                        </button>
+                        <button class="btn btn-outline-secondary" id="backBtn" onclick="goBack()">
+                            <i class="bi bi-arrow-right me-2"></i>العودة
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentStep = 1;
+        let selectedSpecialization = null;
+        let selectedDoctor = null;
+        let selectedDate = null;
+        let selectedTime = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // تعيين الحد الأدنى للتاريخ إلى اليوم
+            document.getElementById('appointmentDate').min = new Date().toISOString().split('T')[0];
+            
+            loadSpecializations();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('doctorSearch').addEventListener('input', searchDoctors);
+            document.getElementById('cityFilter').addEventListener('change', searchDoctors);
+            document.getElementById('genderFilter').addEventListener('change', searchDoctors);
+            document.getElementById('appointmentDate').addEventListener('change', loadAvailableTimes);
+            document.getElementById('bookAppointmentBtn').addEventListener('click', bookAppointment);
+        }
+
+        async function loadSpecializations() {
+            try {
+                const response = await fetch('api/doctors.php?action=specializations');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const container = document.getElementById('specializationsList');
+                    container.innerHTML = data.specializations.map(spec => `
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 specialization-card" onclick="selectSpecialization(${spec.id}, '${spec.name_ar}')">
+                                <div class="card-body text-center">
+                                    <i class="bi ${spec.icon} fs-1 text-primary mb-3"></i>
+                                    <h5 class="card-title">${spec.name_ar}</h5>
+                                    <p class="card-text text-muted small">${spec.description || ''}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading specializations:', error);
+            }
+        }
+
+        function selectSpecialization(id, name) {
+            selectedSpecialization = { id, name };
+            document.querySelectorAll('.specialization-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            // الانتقال للخطوة التالية
+            setTimeout(() => {
+                showStep(2);
+                loadDoctors();
+            }, 500);
+        }
+
+        async function loadDoctors() {
+            try {
+                const response = await fetch(`api/doctors.php?action=search&specialization_id=${selectedSpecialization.id}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayDoctors(data.doctors);
+                }
+            } catch (error) {
+                console.error('Error loading doctors:', error);
+            }
+        }
+
+        function displayDoctors(doctors) {
+            const container = document.getElementById('doctorsList');
+            container.innerHTML = doctors.map(doctor => `
+                <div class="doctor-card" onclick="selectDoctor(${doctor.id})">
+                    <div class="d-flex align-items-center">
+                        <div class="me-3">
+                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                <i class="bi bi-person-fill text-white fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="mb-1">د. ${doctor.full_name}</h5>
+                            <p class="text-muted mb-1">${doctor.specialization_name}</p>
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-warning me-2">${doctor.rating} ⭐</span>
+                                <span class="text-muted small">${doctor.consultation_fee} ريال</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectDoctor(doctorId) {
+            selectedDoctor = doctorId;
+            document.querySelectorAll('.doctor-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            // الانتقال للخطوة التالية
+            setTimeout(() => {
+                showStep(3);
+                updateBookingSummary();
+            }, 500);
+        }
+
+        async function loadAvailableTimes() {
+            const date = document.getElementById('appointmentDate').value;
+            if (!date || !selectedDoctor) return;
+
+            selectedDate = date;
+            
+            try {
+                const response = await fetch(`api/doctors.php?action=available-slots&doctor_id=${selectedDoctor}&date=${date}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayAvailableTimes(data.available_slots);
+                }
+            } catch (error) {
+                console.error('Error loading available times:', error);
+            }
+        }
+
+        function displayAvailableTimes(slots) {
+            const container = document.getElementById('availableTimes');
+            
+            if (slots.length === 0) {
+                container.innerHTML = '<div class="text-center py-4 text-muted">لا توجد أوقات متاحة لهذا التاريخ</div>';
+                return;
+            }
+
+            container.innerHTML = slots.map(slot => `
+                <span class="time-slot" onclick="selectTime('${slot.time}')">
+                    ${slot.time}
+                </span>
+            `).join('');
+        }
+
+        function selectTime(time) {
+            selectedTime = time;
+            document.querySelectorAll('.time-slot').forEach(slot => {
+                slot.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            updateBookingSummary();
+        }
+
+        function updateBookingSummary() {
+            const summary = document.getElementById('bookingSummary');
+            
+            if (selectedSpecialization && selectedDoctor && selectedDate && selectedTime) {
+                summary.innerHTML = `
+                    <div class="border rounded p-3">
+                        <h6>التخصص</h6>
+                        <p class="text-muted">${selectedSpecialization.name}</p>
+                        
+                        <h6>الطبيب</h6>
+                        <p class="text-muted">د. [اسم الطبيب]</p>
+                        
+                        <h6>التاريخ والوقت</h6>
+                        <p class="text-muted">${selectedDate} في ${selectedTime}</p>
+                        
+                        <h6>نوع الاستشارة</h6>
+                        <p class="text-muted">${document.getElementById('consultationType').selectedOptions[0].text}</p>
+                    </div>
+                `;
+                
+                document.getElementById('bookAppointmentBtn').disabled = false;
+            } else {
+                summary.innerHTML = `
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-calendar-plus fs-1"></i>
+                        <p class="mt-2">لم يتم اختيار موعد بعد</p>
+                    </div>
+                `;
+                document.getElementById('bookAppointmentBtn').disabled = true;
+            }
+        }
+
+        async function bookAppointment() {
+            if (!selectedSpecialization || !selectedDoctor || !selectedDate || !selectedTime) {
+                alert('يرجى اختيار جميع التفاصيل المطلوبة');
+                return;
+            }
+
+            const bookBtn = document.getElementById('bookAppointmentBtn');
+            bookBtn.disabled = true;
+            bookBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>جاري الحجز...';
+
+            try {
+                const response = await fetch('api/appointments.php?action=book', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        doctor_id: selectedDoctor,
+                        clinic_id: 1, // سيتم تحديده من الطبيب المختار
+                        appointment_date: selectedDate,
+                        appointment_time: selectedTime,
+                        consultation_type: document.getElementById('consultationType').value,
+                        notes: document.getElementById('appointmentNotes').value
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('تم حجز الموعد بنجاح!');
+                    window.location.href = 'dashboard.html';
+                } else {
+                    alert('فشل في حجز الموعد: ' + data.message);
+                }
+            } catch (error) {
+                console.error('Error booking appointment:', error);
+                alert('حدث خطأ في حجز الموعد');
+            } finally {
+                bookBtn.disabled = false;
+                bookBtn.innerHTML = '<i class="bi bi-calendar-check me-2"></i>حجز الموعد';
+            }
+        }
+
+        function showStep(step) {
+            // إخفاء جميع الخطوات
+            document.getElementById('step1Content').classList.add('d-none');
+            document.getElementById('step2Content').classList.add('d-none');
+            document.getElementById('step3Content').classList.add('d-none');
+            
+            // إظهار الخطوة المطلوبة
+            document.getElementById(`step${step}Content`).classList.remove('d-none');
+            
+            // تحديث مؤشر الخطوات
+            for (let i = 1; i <= 3; i++) {
+                const stepElement = document.getElementById(`step${i}`);
+                if (i < step) {
+                    stepElement.classList.add('completed');
+                    stepElement.classList.remove('active');
+                } else if (i === step) {
+                    stepElement.classList.add('active');
+                    stepElement.classList.remove('completed');
+                } else {
+                    stepElement.classList.remove('active', 'completed');
+                }
+            }
+            
+            currentStep = step;
+        }
+
+        function goBack() {
+            if (currentStep > 1) {
+                showStep(currentStep - 1);
+            }
+        }
+    </script>
+</body>
+</html>
