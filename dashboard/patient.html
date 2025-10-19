@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - شفاء</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .dashboard-sidebar {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .sidebar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            margin: 5px 0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .sidebar-nav .nav-link:hover,
+        .sidebar-nav .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        .main-content {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+        .appointment-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-right: 4px solid #10B981;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 dashboard-sidebar p-0">
+                <div class="p-3">
+                    <div class="text-center mb-4">
+                        <h4><i class="bi bi-activity me-2"></i>شفاء</h4>
+                        <p class="mb-0" id="userWelcome">مرحباً بك</p>
+                    </div>
+                    
+                    <nav class="sidebar-nav">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#dashboard" data-section="dashboard">
+                                    <i class="bi bi-grid-1x2-fill me-2"></i>
+                                    الرئيسية
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#appointments" data-section="appointments">
+                                    <i class="bi bi-calendar-check me-2"></i>
+                                    مواعيدي
+                                    <span class="notification-badge d-none" id="appointmentsBadge">0</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#book-appointment" data-section="book-appointment">
+                                    <i class="bi bi-plus-circle me-2"></i>
+                                    حجز موعد جديد
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#notifications" data-section="notifications">
+                                    <i class="bi bi-bell me-2"></i>
+                                    الإشعارات
+                                    <span class="notification-badge d-none" id="notificationsBadge">0</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#profile" data-section="profile">
+                                    <i class="bi bi-person me-2"></i>
+                                    الملف الشخصي
+                                </a>
+                            </li>
+                            <li class="nav-item mt-3">
+                                <a class="nav-link" href="#" id="logoutBtn">
+                                    <i class="bi bi-box-arrow-right me-2"></i>
+                                    تسجيل الخروج
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <div class="p-4">
+                    <!-- Dashboard Section -->
+                    <div id="dashboard-section" class="content-section">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2>لوحة التحكم</h2>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary" onclick="showSection('book-appointment')">
+                                    <i class="bi bi-plus-circle me-2"></i>حجز موعد جديد
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Statistics Cards -->
+                        <div class="row mb-4">
+                            <div class="col-md-3 mb-3">
+                                <div class="stats-card text-center">
+                                    <i class="bi bi-calendar-check text-primary fs-1 mb-2"></i>
+                                    <h3 class="mb-1" id="totalAppointments">0</h3>
+                                    <p class="text-muted mb-0">إجمالي المواعيد</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="stats-card text-center">
+                                    <i class="bi bi-clock-history text-warning fs-1 mb-2"></i>
+                                    <h3 class="mb-1" id="pendingAppointments">0</h3>
+                                    <p class="text-muted mb-0">في الانتظار</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="stats-card text-center">
+                                    <i class="bi bi-check-circle text-success fs-1 mb-2"></i>
+                                    <h3 class="mb-1" id="completedAppointments">0</h3>
+                                    <p class="text-muted mb-0">مكتملة</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="stats-card text-center">
+                                    <i class="bi bi-x-circle text-danger fs-1 mb-2"></i>
+                                    <h3 class="mb-1" id="cancelledAppointments">0</h3>
+                                    <p class="text-muted mb-0">ملغية</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recent Appointments -->
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="stats-card">
+                                    <h5 class="mb-3">المواعيد القادمة</h5>
+                                    <div id="upcomingAppointments">
+                                        <div class="text-center py-4">
+                                            <div class="spinner-border text-primary" role="status">
+                                                <span class="visually-hidden">جاري التحميل...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Appointments Section -->
+                    <div id="appointments-section" class="content-section d-none">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2>مواعيدي</h2>
+                            <div class="d-flex gap-2">
+                                <select class="form-select" id="appointmentStatusFilter" style="width: auto;">
+                                    <option value="">جميع المواعيد</option>
+                                    <option value="pending">في الانتظار</option>
+                                    <option value="confirmed">مؤكدة</option>
+                                    <option value="completed">مكتملة</option>
+                                    <option value="cancelled">ملغية</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="appointmentsList">
+                            <div class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">جاري التحميل...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Book Appointment Section -->
+                    <div id="book-appointment-section" class="content-section d-none">
+                        <h2 class="mb-4">حجز موعد جديد</h2>
+                        
+                        <!-- Search Doctors -->
+                        <div class="stats-card mb-4">
+                            <h5 class="mb-3">البحث عن طبيب</h5>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">التخصص</label>
+                                    <select class="form-select" id="specialtyFilter">
+                                        <option value="">جميع التخصصات</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">المدينة</label>
+                                    <select class="form-select" id="cityFilter">
+                                        <option value="">جميع المدن</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">شركة التأمين</label>
+                                    <select class="form-select" id="insuranceFilter">
+                                        <option value="">بدون تأمين</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">البحث بالاسم</label>
+                                    <input type="text" class="form-control" id="doctorSearch" placeholder="ابحث عن طبيب...">
+                                </div>
+                                <div class="col-12">
+                                    <button class="btn btn-primary" onclick="searchDoctors()">
+                                        <i class="bi bi-search me-2"></i>بحث
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Doctors List -->
+                        <div id="doctorsList">
+                            <div class="text-center py-4">
+                                <p class="text-muted">استخدم البحث أعلاه للعثور على الأطباء</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notifications Section -->
+                    <div id="notifications-section" class="content-section d-none">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2>الإشعارات</h2>
+                            <button class="btn btn-outline-primary" onclick="markAllNotificationsRead()">
+                                <i class="bi bi-check-all me-2"></i>تمييز الكل كمقروء
+                            </button>
+                        </div>
+
+                        <div id="notificationsList">
+                            <div class="text-center py-4">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">جاري التحميل...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Profile Section -->
+                    <div id="profile-section" class="content-section d-none">
+                        <h2 class="mb-4">الملف الشخصي</h2>
+                        
+                        <div class="stats-card">
+                            <form id="profileForm">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">الاسم الأول</label>
+                                        <input type="text" class="form-control" id="firstName" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">اسم العائلة</label>
+                                        <input type="text" class="form-control" id="lastName" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">البريد الإلكتروني</label>
+                                        <input type="email" class="form-control" id="profileEmail" readonly>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">رقم الهاتف</label>
+                                        <input type="tel" class="form-control" id="phone" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">تاريخ الميلاد</label>
+                                        <input type="date" class="form-control" id="dateOfBirth">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">المدينة</label>
+                                        <input type="text" class="form-control" id="profileCity">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label">العنوان</label>
+                                        <textarea class="form-control" id="address" rows="3"></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-check-circle me-2"></i>حفظ التغييرات
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointment Booking Modal -->
+    <div class="modal fade" id="bookingModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">حجز موعد</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="bookingStep1">
+                        <h6 class="mb-3">اختر التاريخ والوقت</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">التاريخ</label>
+                                <input type="date" class="form-control" id="appointmentDate" min="">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">الوقت المتاح</label>
+                                <div id="availableTimeSlots" class="mt-2">
+                                    <p class="text-muted">اختر التاريخ أولاً</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="bookingStep2" class="d-none">
+                        <h6 class="mb-3">تفاصيل الموعد</h6>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">نوع الموعد</label>
+                                <select class="form-select" id="appointmentType">
+                                    <option value="consultation">استشارة</option>
+                                    <option value="follow_up">متابعة</option>
+                                    <option value="emergency">طارئ</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">الأعراض أو سبب الزيارة</label>
+                                <textarea class="form-control" id="symptoms" rows="3" placeholder="اوصف الأعراض أو سبب الزيارة..."></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">ملاحظات إضافية</label>
+                                <textarea class="form-control" id="appointmentNotes" rows="2" placeholder="أي ملاحظات إضافية..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" id="bookAppointmentBtn">تأكيد الحجز</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="patient-dashboard.js"></script>
+</body>
+</html>
