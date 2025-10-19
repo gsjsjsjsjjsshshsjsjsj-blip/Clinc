@@ -37,10 +37,23 @@ class Doctors {
                 $params[] = $filters['specialty_id'];
             }
             
-            // فلتر المدينة
+            // فلتر المدينة (دعم البحث بالمعرف أو الاسم)
             if (isset($filters['city']) && $filters['city']) {
-                $sql .= " AND d.clinic_city LIKE ?";
-                $params[] = '%' . $filters['city'] . '%';
+                if (is_numeric($filters['city'])) {
+                    // البحث بمعرف المدينة
+                    $sql .= " AND d.city_id = ?";
+                    $params[] = $filters['city'];
+                } else {
+                    // البحث باسم المدينة
+                    $sql .= " AND d.clinic_city LIKE ?";
+                    $params[] = '%' . $filters['city'] . '%';
+                }
+            }
+            
+            // فلتر المنطقة
+            if (isset($filters['region']) && $filters['region']) {
+                $sql .= " AND EXISTS (SELECT 1 FROM cities c WHERE c.id = d.city_id AND c.region_ar LIKE ?)";
+                $params[] = '%' . $filters['region'] . '%';
             }
             
             // فلتر الاسم
