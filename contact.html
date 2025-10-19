@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تواصل معنا - كلينيكا</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Google Fonts (Cairo ) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS File -->
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+    <!-- ==================== شريط التنقل العلوي (نفسه ) ==================== -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4 text-primary" href="index.html">
+                <i class="bi bi-heart-pulse-fill"></i>
+                كلينيكا
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">الرئيسية</a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.html#specialties">التخصصات</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">الأطباء</a></li>
+                    <li class="nav-item"><a class="nav-link active fw-bold" href="contact.html">تواصل معنا</a></li>
+                </ul>
+                <div class="d-flex">
+                    <a href="login.html" class="btn btn-outline-primary me-2">تسجيل الدخول</a>
+                    <a href="index.html#search" class="btn btn-primary">حجز موعد</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==================== المحتوى الرئيسي للصفحة ==================== -->
+    <main class="container py-5">
+        <div class="text-center mb-5">
+            <h1 class="section-title">تواصل معنا</h1>
+            <p class="section-subtitle">نحن هنا لمساعدتك. لا تتردد في إرسال استفساراتك أو اقتراحاتك.</p>
+        </div>
+
+        <div class="row g-5">
+            <!-- ==================== الجزء الأيمن: نموذج التواصل ==================== -->
+            <div class="col-lg-7">
+                <div class="dashboard-card">
+                    <h4 class="mb-4">أرسل لنا رسالة</h4>
+                    <form>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="contactName" placeholder="اسمك الكامل" required>
+                                    <label for="contactName">الاسم الكامل</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="email" class="form-control" id="contactEmail" placeholder="بريدك الإلكتروني" required>
+                                    <label for="contactEmail">البريد الإلكتروني</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="contactSubject" placeholder="الموضوع" required>
+                            <label for="contactSubject">الموضوع</label>
+                        </div>
+                        <div class="form-floating mb-4">
+                            <textarea class="form-control" placeholder="اكتب رسالتك هنا" id="contactMessage" style="height: 150px" required></textarea>
+                            <label for="contactMessage">رسالتك</label>
+                        </div>
+                        <div class="d-grid">
+                            <button class="btn btn-primary btn-lg" type="submit">إرسال الرسالة</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ==================== الجزء الأيسر: معلومات التواصل ==================== -->
+            <div class="col-lg-5">
+                <div class="dashboard-card h-100">
+                    <h4 class="mb-4">معلومات التواصل</h4>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex align-items-start border-0 px-0">
+                            <i class="bi bi-geo-alt-fill fs-4 me-3 text-primary"></i>
+                            <div>
+                                <strong>العنوان</strong>
+                                <p class="text-muted mb-0">شارع الملك فهد، حي العليا، الرياض، المملكة العربية السعودية</p>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex align-items-start border-0 px-0 mt-3">
+                            <i class="bi bi-telephone-fill fs-4 me-3 text-primary"></i>
+                            <div>
+                                <strong>الهاتف</strong>
+                                <p class="text-muted mb-0" dir="ltr">+966 11 462 1234</p>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex align-items-start border-0 px-0 mt-3">
+                            <i class="bi bi-envelope-fill fs-4 me-3 text-primary"></i>
+                            <div>
+                                <strong>البريد الإلكتروني</strong>
+                                <p class="text-muted mb-0">support@clinica.com</p>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex align-items-start border-0 px-0 mt-3">
+                            <i class="bi bi-clock-fill fs-4 me-3 text-primary"></i>
+                            <div>
+                                <strong>أوقات العمل</strong>
+                                <p class="text-muted mb-0">من السبت إلى الخميس، 9 صباحًا - 10 مساءً</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==================== قسم الخريطة ==================== -->
+    <div class="container-fluid mt-5 px-0">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3624.542184422076!2d46.683333315000005!3d24.7076666841258!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2f032773b75a39%3A0x54a74452309e447!2sKingdom%20Centre!5e0!3m2!1sen!2ssa!4v1633342321456!5m2!1sen!2ssa" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+    </div>
+
+    <!-- ==================== التذييل (نفسه ) ==================== -->
+    <footer id="contact" class="footer-section">
+        <div class="container">
+            <!-- ... (نفس كود التذييل من الصفحة الرئيسية) ... -->
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

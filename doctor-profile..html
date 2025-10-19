@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ملف الطبيب - </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-background">
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4 text-primary-color" href="index.html"><i class="bi bi-activity"></i> شفاء</a>
+            <div class="ms-auto d-flex align-items-center">
+                <a href="#" class="auth-icon-inner me-3" title="الإشعارات"><i class="bi bi-bell-fill"></i></a>
+                <a href="#" class="auth-icon-inner" title="حسابي"><i class="bi bi-person-circle"></i></a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container my-5">
+        <div class="doctor-profile-header-card">
+            <div class="doctor-card-img"><img src="https://t4.ftcdn.net/jpg/02/60/04/09/360_F_260040900_oO6YW1sHTnKxby4GcjCvtypUCWjnQRg5.jpg" alt="د. أحمد المصري"></div>
+            <div class="doctor-header-info">
+                <h2 class="doctor-name">احمد</h2>
+                <p class="doctor-specialty">أخصائي أول طب وجراحة الأسنان</p>
+                <div class="doctor-rating"><i class="bi bi-star-fill"></i> 4.9 <span class="text-muted">(124 تقييم )</span></div>
+            </div>
+            <div class="doctor-header-meta">
+                <div class="meta-item"><i class="bi bi-cash-coin"></i><span><strong>سعر الكشف:</strong> 300 ريال</span></div>
+                <div class="meta-item"><i class="bi bi-hourglass-split"></i><span><strong>مدة الانتظار:</strong> 15 دقيقة</span></div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-2">
+            <div class="col-lg-8">
+                <div class="booking-section-card">
+                    <h4 class="mb-4">اختر الموعد المناسب</h4>
+                    <div class="days-carousel mb-4">
+                        <div class="day-item active"><span>الأربعاء</span><small>24 سبتمبر</small></div>
+                        <div class="day-item"><span>الخميس</span><small>25 سبتمبر</small></div>
+                        <div class="day-item"><span>السبت</span><small>27 سبتمبر</small></div>
+                        <div class="day-item disabled"><span>الأحد</span><small>28 سبتمبر</small></div>
+                        <div class="day-item"><span>الاثنين</span><small>29 سبتمبر</small></div>
+                        <div class="day-item"><span>الثلاثاء</span><small>30 سبتمبر</small></div>
+                    </div>
+                    <div class="time-slots-container">
+                        <h6 class="time-period-title"><i class="bi bi-sunrise"></i> الفترة الصباحية</h6>
+                        <div class="time-slots">
+                            <div class="time-slot">09:00 ص</div>
+                            <div class="time-slot disabled">09:30 ص</div>
+                            <div class="time-slot">10:00 ص</div>
+                            <div class="time-slot">10:30 ص</div>
+                        </div>
+                        <h6 class="time-period-title mt-4"><i class="bi bi-sunset"></i> الفترة المسائية</h6>
+                        <div class="time-slots">
+                            <div class="time-slot">04:00 م</div>
+                            <div class="time-slot">04:30 م</div>
+                            <div class="time-slot">05:00 م</div>
+                        </div>
+                    </div>
+                    <div class="d-grid mt-4">
+                        <button class="btn btn-primary btn-lg" id="bookBtn" disabled>اختر موعداً لإتمام الحجز</button>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="col-lg-4">
+                <div class="info-tabs-card">
+                    <ul class="nav nav-pills nav-fill mb-3" id="pills-tab" role="tablist">
+                        <li class="nav-item" role="presentation"><button class="nav-link active" id

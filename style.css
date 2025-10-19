@@ -1,0 +1,497 @@
+/* style.css */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: 'Tajawal', sans-serif;
+    overflow: hidden; /* لمنع ظهور أي شرائط تمرير */
+}
+
+.hero-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url('https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070&auto=format&fit=crop' ) no-repeat center center;
+    background-size: cover;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* طبقة داكنة لجعل النص أوضح */
+}
+
+.hero-content {
+    position: relative; /* لجعله فوق الطبقة الداكنة */
+    text-align: center;
+    z-index: 2;
+}
+
+.description-text {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 500;
+    min-height: 100px; /* حجز مساحة للنص لمنع القفز */
+    border-left: 3px solid rgba(255, 255, 255, 0.7); /* المؤشر الوامض للآلة الكاتبة */
+    padding-left: 15px;
+    animation: blink-caret 0.75s step-end infinite;
+}
+
+.btn-booking {
+    background-color: #10B981; /* لون أخضر مميز */
+    border-color: #10B981;
+    color: white;
+    font-weight: 700;
+    padding: 15px 40px;
+    border-radius: 50px; /* زر دائري الحواف */
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+
+.btn-booking:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.6);
+    color: white;
+}
+
+.top-auth-icons {
+    position: absolute;
+    top: 20px;
+    right: 30px; /* على اليمين في التصميم العربي */
+    z-index: 3;
+    display: flex;
+    gap: 15px;
+}
+
+.auth-icon {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.8rem;
+    transition: all 0.2s ease;
+}
+
+.auth-icon:hover {
+    color: white;
+    transform: scale(1.2);
+}
+
+/* Animation for the typing cursor */
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: rgba(255, 255, 255, 0.7); }
+}
+/* =================================
+   Search Modal Styles
+   ================================= */
+.modal-content {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1 );
+}
+
+.modal-header {
+    background-color: #F0FDFA; /* لون الخلفية الأخضر الفاتح جداً */
+    border-bottom: 1px solid #e0e0e0;
+    padding: 1.5rem;
+}
+
+.modal-header .modal-title {
+    font-weight: 700;
+    color: #059669; /* لون أخضر داكن */
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.modal-body .form-label {
+    font-weight: 500;
+    color: #1F2937; /* لون النص الداكن */
+    margin-bottom: 0.5rem;
+}
+
+.modal-body .form-control,
+.modal-body .form-select {
+    padding: 0.85rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ced4da;
+}
+.modal-body .form-control:focus,
+.modal-body .form-select:focus {
+    border-color: #10B981; /* لون أخضر عند التركيز */
+    box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25);
+}
+
+.modal-body .input-group-text {
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+    padding: 1rem 2rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.modal-footer .btn-primary {
+    background-color: #10B981;
+    border-color: #10B981;
+    font-weight: 700;
+    padding: 0.75rem;
+    transition: all 0.2s ease;
+}
+.modal-footer .btn-primary:hover {
+    background-color: #059669;
+    border-color: #059669;
+}
+/* =================================
+   Header & Offcanvas Menu
+   ================================= */
+.top-header {
+    position: absolute;
+    top: 20px;
+    right: 30px; /* في اليمين للتصميم العربي */
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.brand-name {
+    color: white;
+    font-size: 2rem;
+    font-weight: 800; /* خط عريض جداً */
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+.brand-name:hover {
+    color: #10B981;
+}
+.brand-name i {
+    vertical-align: middle;
+}
+
+.menu-icon {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.9 );
+    font-size: 2.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.menu-icon:hover {
+    color: white;
+    transform: scale(1.1);
+}
+
+.top-auth-icons {
+    left: 30px; /* نقل أيقونات الدخول لليسار */
+    right: auto;
+}
+
+/* Offcanvas Menu Styling */
+.offcanvas {
+    background-color: #1F2937; /* لون داكن للقائمة */
+    color: #D1D5DB;
+}
+.offcanvas-header {
+    border-bottom: 1px solid #374151;
+}
+.offcanvas-title {
+    color: #10B981;
+    font-weight: 700;
+}
+.offcanvas .btn-close {
+    background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e" ) center/1em auto no-repeat;
+}
+.menu-description {
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+.menu-links li a {
+    display: block;
+    padding: 1rem 0.5rem;
+    color: #D1D5DB;
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+}
+.menu-links li a:hover {
+    background-color: #374151;
+    color: white;
+}
+.menu-links li a i {
+    margin-left: 15px; /* في العربي، margin-left تعني مسافة على اليمين */
+    color: #10B981;
+    font-size: 1.3rem;
+    vertical-align: middle;
+}
+
+/* =================================
+   Hero Content Update
+   ================================= */
+.main-title {
+    color: white;
+    font-size: 3.5rem; /* تكبير حجم الخط للعنوان الرئيسي */
+    font-weight: 800;
+    min-height: 70px; /* حجز مساحة لمنع القفز */
+    margin-bottom: 1rem;
+}
+
+/* تعديل بسيط على المؤشر ليتناسب مع الخط الجديد */
+.main-title.typing {
+    border-left: 5px solid rgba(255, 255, 255, 0.7);
+    padding-left: 15px;
+    animation: blink-caret 0.75s step-end infinite;
+}
+
+.hero-description {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.2rem;
+    font-weight: 400;
+    max-width: 600px; /* تحديد عرض الوصف لسهولة القراءة */
+    margin: 0 auto; /* توسيط الوصف */
+    line-height: 1.7;
+}
+
+/* =================================
+   Search Results Page
+   ================================= */
+.page-background {
+    background-color: #f8f9fa; /* خلفية رمادية فاتحة للصفحات الداخلية */
+}
+
+.text-primary-color {
+    color: #10B981 !important;
+}
+
+.auth-icon-inner {
+    color: #6B7280;
+    font-size: 1.5rem;
+    transition: color 0.2s ease;
+}
+.auth-icon-inner:hover {
+    color: #10B981;
+}
+
+/* Filters Sidebar */
+.filters-sidebar {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    position: sticky; /* لجعل الفلاتر ثابتة عند التمرير */
+    top: 100px;
+}
+.filters-title {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+.filter-group {
+    margin-bottom: 1.5rem;
+}
+.filter-group-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+.form-check-input:checked {
+    background-color: #10B981;
+    border-color: #10B981;
+}
+.form-range::-webkit-slider-thumb {
+    background-color: #10B981;
+}
+.form-range::-moz-range-thumb {
+    background-color: #10B981;
+}
+
+/* Results Header */
+.results-header {
+    background-color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Doctor Card */
+.doctor-card {
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    display: flex;
+    padding: 1.5rem;
+    gap: 1.5rem;
+    transition: all 0.2s ease-in-out;
+}
+.doctor-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+}
+.doctor-card-img img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #eee;
+}
+.doctor-card-body {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+.doctor-name {
+    font-size: 1.4rem;
+    color: #10B981;
+}
+.doctor-specialty {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+.doctor-rating {
+    color: #ffc107;
+    font-weight: 700;
+}
+.doctor-location {
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+.doctor-booking-info {
+    text-align: left;
+    border-right: 1px solid #eee; /* في العربي، سيكون على اليسار */
+    padding-right: 1.5rem; /* في العربي، سيكون padding-left */
+    min-width: 220px;
+}
+.availability-info {
+    font-weight: 700;
+    color: #059669;
+}
+.price-info {
+    font-weight: 500;
+}
+/* =================================
+   Doctor Profile Page
+   ================================= */
+.doctor-profile-header-card {
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+.doctor-header-info {
+    flex-grow: 1;
+}
+.doctor-header-meta {
+    display: flex;
+    gap: 2rem;
+    color: #6B7280;
+}
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.meta-item i {
+    font-size: 1.5rem;
+    color: #10B981;
+}
+
+/* Booking Section */
+.booking-section-card, .info-tabs-card {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    height: 100%;
+}
+.days-carousel {
+    display: flex;
+    gap: 0.75rem;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    scrollbar-width: none; /* Firefox */
+}
+.days-carousel::-webkit-scrollbar { display: none; } /* Chrome, Safari */
+.day-item {
+    flex-shrink: 0;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+.day-item:hover { background-color: #f0fdfa; }
+.day-item.active {
+    background-color: #10B981;
+    color: white;
+    border-color: #10B981;
+}
+.day-item.disabled {
+    background-color: #f8f9fa;
+    color: #adb5bd;
+    cursor: not-allowed;
+}
+.day-item span { display: block; font-weight: 700; }
+.day-item small { font-size: 0.8rem; }
+
+.time-period-title { color: #059669; font-weight: 700; }
+.time-slots { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.time-slot {
+    padding: 0.6rem 1.2rem;
+    border: 1px solid #10B981;
+    border-radius: 0.5rem;
+    color: #10B981;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 700;
+}
+.time-slot:hover { background-color: #f0fdfa; }
+.time-slot.active { background-color: #10B981; color: white; }
+.time-slot.disabled {
+    border-color: #ddd;
+    color: #adb5bd;
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+    text-decoration: line-through;
+}
+
+/* Info Tabs */
+.info-tabs-card .nav-pills .nav-link {
+    color: #6B7280;
+    font-weight: 700;
+}
+.info-tabs-card .nav-pills .nav-link.active {
+    background-color: #10B981;
+    color: white;
+}
+.tab-content {
+    padding-top: 1rem;
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+.map-placeholder {
+    background-color: #e9ecef;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5rem;
+    color: #6B7280;
+    margin-top: 1rem;
+}
