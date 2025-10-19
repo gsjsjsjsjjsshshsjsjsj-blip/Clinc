@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مواعيدي - شفاء</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .appointment-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease;
+        }
+        .appointment-card:hover {
+            transform: translateY(-2px);
+        }
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-confirmed { background: #d1fae5; color: #065f46; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; }
+        .status-completed { background: #e0e7ff; color: #3730a3; }
+        .status-no_show { background: #f3f4f6; color: #374151; }
+        
+        .filter-tabs .nav-link {
+            border: none;
+            background: none;
+            color: #6B7280;
+            font-weight: 500;
+        }
+        .filter-tabs .nav-link.active {
+            color: #10B981;
+            border-bottom: 2px solid #10B981;
+        }
+        
+        .doctor-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .doctor-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #10B981;
+        }
+        
+        .appointment-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #6B7280;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #d1d5db;
+        }
+    </style>
+</head>
+<body class="page-background">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3 text-primary" href="index.html">
+                <i class="bi bi-activity"></i> شفاء
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">لوحة التحكم</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="search-results.html">البحث عن الأطباء</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="appointments.html">مواعيدي</a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex align-items-center">
+                    <a href="notifications.html" class="btn btn-outline-primary me-3 position-relative">
+                        <i class="bi bi-bell"></i>
+                        <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">0</span>
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> <span id="user-name">المستخدم</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person"></i> الملف الشخصي</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2>مواعيدي</h2>
+                    <a href="search-results.html" class="btn btn-primary">
+                        <i class="bi bi-plus"></i> حجز موعد جديد
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <ul class="nav nav-pills filter-tabs" id="appointment-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="all-tab" data-bs-toggle="pill" data-bs-target="#all" type="button" role="tab">
+                            جميع المواعيد
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="upcoming-tab" data-bs-toggle="pill" data-bs-target="#upcoming" type="button" role="tab">
+                            القادمة
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="completed-tab" data-bs-toggle="pill" data-bs-target="#completed" type="button" role="tab">
+                            المكتملة
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="cancelled-tab" data-bs-toggle="pill" data-bs-target="#cancelled" type="button" role="tab">
+                            الملغية
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Appointments Content -->
+        <div class="tab-content" id="appointment-tabContent">
+            <div class="tab-pane fade show active" id="all" role="tabpanel">
+                <div id="all-appointments">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">جاري التحميل...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="upcoming" role="tabpanel">
+                <div id="upcoming-appointments">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">جاري التحميل...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="completed" role="tabpanel">
+                <div id="completed-appointments">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">جاري التحميل...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="cancelled" role="tabpanel">
+                <div id="cancelled-appointments">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">جاري التحميل...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Appointment Modal -->
+    <div class="modal fade" id="cancelModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">إلغاء الموعد</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>هل أنت متأكد من إلغاء هذا الموعد؟</p>
+                    <div class="mb-3">
+                        <label for="cancelReason" class="form-label">سبب الإلغاء (اختياري)</label>
+                        <textarea class="form-control" id="cancelReason" rows="3" placeholder="اكتب سبب الإلغاء..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-danger" onclick="confirmCancel()">تأكيد الإلغاء</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="secript.js"></script>
+    <script>
+        let currentAppointmentId = null;
+        let allAppointments = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAppointments();
+            setupTabListeners();
+        });
+
+        async function loadAppointments() {
+            try {
+                // Load user info
+                const userResponse = await apiCall('/api/auth.php?action=profile');
+                if (userResponse.success) {
+                    document.getElementById('user-name').textContent = userResponse.user.full_name;
+                }
+
+                // Load all appointments
+                const response = await apiCall('/api/appointments.php?action=my_appointments');
+                if (response.success) {
+                    allAppointments = response.appointments;
+                    displayAppointments();
+                }
+
+                // Load notifications
+                const notificationsResponse = await apiCall('/api/notifications.php?action=unread_count');
+                if (notificationsResponse.success) {
+                    updateNotificationBadge(notificationsResponse.unread_count);
+                }
+
+            } catch (error) {
+                console.error('Error loading appointments:', error);
+                showNotification('حدث خطأ في تحميل المواعيد', 'error');
+            }
+        }
+
+        function setupTabListeners() {
+            const tabs = document.querySelectorAll('#appointment-tabs button[data-bs-toggle="pill"]');
+            tabs.forEach(tab => {
+                tab.addEventListener('shown.bs.tab', function(event) {
+                    const target = event.target.getAttribute('data-bs-target');
+                    filterAppointments(target);
+                });
+            });
+        }
+
+        function displayAppointments() {
+            displayAppointmentsByStatus('all', allAppointments);
+            displayAppointmentsByStatus('upcoming', allAppointments.filter(apt => 
+                apt.status === 'pending' || apt.status === 'confirmed'
+            ));
+            displayAppointmentsByStatus('completed', allAppointments.filter(apt => 
+                apt.status === 'completed'
+            ));
+            displayAppointmentsByStatus('cancelled', allAppointments.filter(apt => 
+                apt.status === 'cancelled'
+            ));
+        }
+
+        function filterAppointments(status) {
+            let filteredAppointments = [];
+            
+            switch(status) {
+                case '#upcoming':
+                    filteredAppointments = allAppointments.filter(apt => 
+                        apt.status === 'pending' || apt.status === 'confirmed'
+                    );
+                    break;
+                case '#completed':
+                    filteredAppointments = allAppointments.filter(apt => 
+                        apt.status === 'completed'
+                    );
+                    break;
+                case '#cancelled':
+                    filteredAppointments = allAppointments.filter(apt => 
+                        apt.status === 'cancelled'
+                    );
+                    break;
+                default:
+                    filteredAppointments = allAppointments;
+            }
+            
+            displayAppointmentsByStatus(status.replace('#', ''), filteredAppointments);
+        }
+
+        function displayAppointmentsByStatus(containerId, appointments) {
+            const container = document.getElementById(containerId + '-appointments');
+            
+            if (appointments.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-calendar-x"></i>
+                        <h5>لا توجد مواعيد</h5>
+                        <p>لم يتم العثور على مواعيد في هذا القسم</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = appointments.map(appointment => `
+                <div class="appointment-card">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="doctor-info">
+                                <div class="doctor-avatar">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1">${appointment.doctor_name}</h5>
+                                    <p class="text-muted mb-1">${appointment.specialization_name}</p>
+                                    <small class="text-muted">
+                                        <i class="bi bi-geo-alt"></i> ${appointment.clinic_name || 'غير محدد'}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <div class="mb-2">
+                                <span class="status-badge status-${appointment.status}">
+                                    ${getStatusText(appointment.status)}
+                                </span>
+                            </div>
+                            <div class="text-muted">
+                                <div><i class="bi bi-calendar"></i> ${formatDate(appointment.appointment_date)}</div>
+                                <div><i class="bi bi-clock"></i> ${appointment.appointment_time}</div>
+                                <div><i class="bi bi-currency-dollar"></i> ${appointment.consultation_fee} ريال</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${appointment.notes ? `
+                        <div class="mt-3">
+                            <h6>ملاحظات:</h6>
+                            <p class="text-muted">${appointment.notes}</p>
+                        </div>
+                    ` : ''}
+                    
+                    ${appointment.symptoms ? `
+                        <div class="mt-3">
+                            <h6>الأعراض:</h6>
+                            <p class="text-muted">${appointment.symptoms}</p>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="appointment-actions mt-3">
+                        ${getAppointmentActions(appointment)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getAppointmentActions(appointment) {
+            const actions = [];
+            
+            if (appointment.status === 'pending' || appointment.status === 'confirmed') {
+                actions.push(`
+                    <button class="btn btn-outline-danger btn-sm" onclick="showCancelModal(${appointment.id})">
+                        <i class="bi bi-x-circle"></i> إلغاء
+                    </button>
+                `);
+            }
+            
+            if (appointment.status === 'completed') {
+                actions.push(`
+                    <button class="btn btn-outline-primary btn-sm" onclick="viewAppointmentDetails(${appointment.id})">
+                        <i class="bi bi-eye"></i> التفاصيل
+                    </button>
+                `);
+            }
+            
+            return actions.join('');
+        }
+
+        function getStatusText(status) {
+            const statusTexts = {
+                'pending': 'في الانتظار',
+                'confirmed': 'مؤكد',
+                'cancelled': 'ملغي',
+                'completed': 'مكتمل',
+                'no_show': 'لم يحضر'
+            };
+            return statusTexts[status] || status;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ar-SA');
+        }
+
+        function showCancelModal(appointmentId) {
+            currentAppointmentId = appointmentId;
+            const modal = new bootstrap.Modal(document.getElementById('cancelModal'));
+            modal.show();
+        }
+
+        async function confirmCancel() {
+            if (!currentAppointmentId) return;
+            
+            const reason = document.getElementById('cancelReason').value;
+            
+            try {
+                const response = await apiCall('/api/appointments.php?action=cancel', 'PUT', {
+                    appointment_id: currentAppointmentId,
+                    reason: reason
+                });
+                
+                if (response.success) {
+                    showNotification('تم إلغاء الموعد بنجاح', 'success');
+                    loadAppointments(); // Reload appointments
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('cancelModal'));
+                    modal.hide();
+                }
+            } catch (error) {
+                console.error('Error cancelling appointment:', error);
+                showNotification('حدث خطأ في إلغاء الموعد', 'error');
+            }
+        }
+
+        function viewAppointmentDetails(appointmentId) {
+            // This would open a modal or navigate to a details page
+            showNotification('عرض تفاصيل الموعد - قيد التطوير', 'info');
+        }
+
+        function updateNotificationBadge(count) {
+            const badge = document.getElementById('notification-badge');
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

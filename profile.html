@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الملف الشخصي - شفاء</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .profile-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #e5e7eb;
+        }
+        .profile-avatar-placeholder {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #10B981;
+            border: 4px solid #e5e7eb;
+        }
+        .form-floating {
+            margin-bottom: 1rem;
+        }
+        .btn-edit {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+        }
+        .stats-card {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .stats-number {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+        .stats-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body class="page-background">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3 text-primary" href="index.html">
+                <i class="bi bi-activity"></i> شفاء
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">لوحة التحكم</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="search-results.html">البحث عن الأطباء</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="appointments.html">مواعيدي</a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex align-items-center">
+                    <a href="notifications.html" class="btn btn-outline-primary me-3 position-relative">
+                        <i class="bi bi-bell"></i>
+                        <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">0</span>
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> <span id="user-name">المستخدم</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person"></i> الملف الشخصي</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Profile Info -->
+            <div class="col-lg-8">
+                <div class="profile-card position-relative">
+                    <button class="btn btn-outline-primary btn-edit" onclick="toggleEditMode()">
+                        <i class="bi bi-pencil"></i> تعديل
+                    </button>
+                    
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <div id="avatar-container">
+                                <img id="profile-avatar" src="" alt="صورة الملف الشخصي" class="profile-avatar" style="display: none;">
+                                <div id="avatar-placeholder" class="profile-avatar-placeholder">
+                                    <i class="bi bi-person"></i>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-secondary btn-sm mt-2" onclick="changeAvatar()" id="change-avatar-btn" style="display: none;">
+                                <i class="bi bi-camera"></i> تغيير الصورة
+                            </button>
+                            <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                        </div>
+                        <div class="col-md-8">
+                            <h4 id="profile-name">اسم المستخدم</h4>
+                            <p class="text-muted" id="profile-email">البريد الإلكتروني</p>
+                            <p class="text-muted" id="profile-role">نوع الحساب</p>
+                            <div class="mt-3">
+                                <span class="badge bg-success" id="account-status">نشط</span>
+                                <span class="badge bg-primary" id="verification-status">غير محقق</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Form -->
+                <div class="profile-card" id="profile-form" style="display: none;">
+                    <h5 class="mb-3">تعديل البيانات الشخصية</h5>
+                    <form id="update-profile-form">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="full_name" placeholder="الاسم الكامل">
+                                    <label for="full_name">الاسم الكامل</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="email" class="form-control" id="email" placeholder="البريد الإلكتروني" readonly>
+                                    <label for="email">البريد الإلكتروني</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="tel" class="form-control" id="phone" placeholder="رقم الهاتف">
+                                    <label for="phone">رقم الهاتف</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="date" class="form-control" id="date_of_birth" placeholder="تاريخ الميلاد">
+                                    <label for="date_of_birth">تاريخ الميلاد</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="gender">
+                                        <option value="male">ذكر</option>
+                                        <option value="female">أنثى</option>
+                                    </select>
+                                    <label for="gender">الجنس</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check"></i> حفظ التغييرات
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="cancelEdit()">
+                                <i class="bi bi-x"></i> إلغاء
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Change Password -->
+                <div class="profile-card">
+                    <h5 class="mb-3">تغيير كلمة المرور</h5>
+                    <form id="change-password-form">
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="current_password" placeholder="كلمة المرور الحالية">
+                            <label for="current_password">كلمة المرور الحالية</label>
+                        </div>
+                        
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="new_password" placeholder="كلمة المرور الجديدة">
+                            <label for="new_password">كلمة المرور الجديدة</label>
+                        </div>
+                        
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="confirm_password" placeholder="تأكيد كلمة المرور">
+                            <label for="confirm_password">تأكيد كلمة المرور</label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-key"></i> تغيير كلمة المرور
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Stats Sidebar -->
+            <div class="col-lg-4">
+                <div class="stats-card mb-3">
+                    <div class="stats-number" id="total-appointments">0</div>
+                    <div class="stats-label">إجمالي المواعيد</div>
+                </div>
+                
+                <div class="stats-card mb-3">
+                    <div class="stats-number" id="upcoming-appointments">0</div>
+                    <div class="stats-label">المواعيد القادمة</div>
+                </div>
+                
+                <div class="stats-card mb-3">
+                    <div class="stats-number" id="completed-appointments">0</div>
+                    <div class="stats-label">المواعيد المكتملة</div>
+                </div>
+                
+                <div class="profile-card">
+                    <h6 class="mb-3">إعدادات الحساب</h6>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary" onclick="exportData()">
+                            <i class="bi bi-download"></i> تصدير البيانات
+                        </button>
+                        <button class="btn btn-outline-danger" onclick="deleteAccount()">
+                            <i class="bi bi-trash"></i> حذف الحساب
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="secript.js"></script>
+    <script>
+        let userData = null;
+        let isEditMode = false;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProfile();
+            loadStats();
+            setupEventListeners();
+        });
+
+        async function loadProfile() {
+            try {
+                const response = await apiCall('/api/auth.php?action=profile');
+                if (response.success) {
+                    userData = response.user;
+                    displayProfile(userData);
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showNotification('حدث خطأ في تحميل الملف الشخصي', 'error');
+            }
+        }
+
+        async function loadStats() {
+            try {
+                // Load user info
+                const userResponse = await apiCall('/api/auth.php?action=profile');
+                if (userResponse.success) {
+                    document.getElementById('user-name').textContent = userResponse.user.full_name;
+                }
+
+                // Load appointments
+                const appointmentsResponse = await apiCall('/api/appointments.php?action=my_appointments');
+                if (appointmentsResponse.success) {
+                    updateStats(appointmentsResponse.appointments);
+                }
+
+                // Load notifications
+                const notificationsResponse = await apiCall('/api/notifications.php?action=unread_count');
+                if (notificationsResponse.success) {
+                    updateNotificationBadge(notificationsResponse.unread_count);
+                }
+
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        function displayProfile(user) {
+            document.getElementById('profile-name').textContent = user.full_name;
+            document.getElementById('profile-email').textContent = user.email;
+            document.getElementById('profile-role').textContent = getRoleText(user.role);
+            
+            // Set verification status
+            const verificationStatus = document.getElementById('verification-status');
+            if (user.email_verified) {
+                verificationStatus.textContent = 'محقق';
+                verificationStatus.className = 'badge bg-success';
+            } else {
+                verificationStatus.textContent = 'غير محقق';
+                verificationStatus.className = 'badge bg-warning';
+            }
+            
+            // Set avatar
+            if (user.profile_image) {
+                document.getElementById('profile-avatar').src = user.profile_image;
+                document.getElementById('profile-avatar').style.display = 'block';
+                document.getElementById('avatar-placeholder').style.display = 'none';
+            }
+        }
+
+        function getRoleText(role) {
+            const roleTexts = {
+                'patient': 'مريض',
+                'doctor': 'طبيب',
+                'admin': 'مدير'
+            };
+            return roleTexts[role] || role;
+        }
+
+        function updateStats(appointments) {
+            const total = appointments.length;
+            const upcoming = appointments.filter(apt => 
+                apt.status === 'pending' || apt.status === 'confirmed'
+            ).length;
+            const completed = appointments.filter(apt => 
+                apt.status === 'completed'
+            ).length;
+
+            document.getElementById('total-appointments').textContent = total;
+            document.getElementById('upcoming-appointments').textContent = upcoming;
+            document.getElementById('completed-appointments').textContent = completed;
+        }
+
+        function setupEventListeners() {
+            // Profile form
+            document.getElementById('update-profile-form').addEventListener('submit', updateProfile);
+            
+            // Password form
+            document.getElementById('change-password-form').addEventListener('submit', changePassword);
+            
+            // Avatar input
+            document.getElementById('avatar-input').addEventListener('change', handleAvatarChange);
+        }
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            const form = document.getElementById('profile-form');
+            const editBtn = document.querySelector('.btn-edit');
+            const changeAvatarBtn = document.getElementById('change-avatar-btn');
+            
+            if (isEditMode) {
+                form.style.display = 'block';
+                editBtn.innerHTML = '<i class="bi bi-x"></i> إلغاء';
+                changeAvatarBtn.style.display = 'inline-block';
+                populateForm();
+            } else {
+                form.style.display = 'none';
+                editBtn.innerHTML = '<i class="bi bi-pencil"></i> تعديل';
+                changeAvatarBtn.style.display = 'none';
+            }
+        }
+
+        function populateForm() {
+            if (userData) {
+                document.getElementById('full_name').value = userData.full_name || '';
+                document.getElementById('email').value = userData.email || '';
+                document.getElementById('phone').value = userData.phone || '';
+                document.getElementById('date_of_birth').value = userData.date_of_birth || '';
+                document.getElementById('gender').value = userData.gender || 'male';
+            }
+        }
+
+        function cancelEdit() {
+            isEditMode = false;
+            toggleEditMode();
+        }
+
+        async function updateProfile(event) {
+            event.preventDefault();
+            
+            const formData = {
+                full_name: document.getElementById('full_name').value,
+                phone: document.getElementById('phone').value,
+                date_of_birth: document.getElementById('date_of_birth').value,
+                gender: document.getElementById('gender').value
+            };
+            
+            try {
+                const response = await apiCall('/api/auth.php?action=update_profile', 'PUT', formData);
+                if (response.success) {
+                    showNotification('تم تحديث الملف الشخصي بنجاح', 'success');
+                    loadProfile(); // Reload profile data
+                    cancelEdit();
+                } else {
+                    throw new Error(response.message);
+                }
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showNotification(error.message || 'حدث خطأ في تحديث الملف الشخصي', 'error');
+            }
+        }
+
+        async function changePassword(event) {
+            event.preventDefault();
+            
+            const currentPassword = document.getElementById('current_password').value;
+            const newPassword = document.getElementById('new_password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            
+            if (newPassword !== confirmPassword) {
+                showNotification('كلمة المرور الجديدة وتأكيدها غير متطابقين', 'error');
+                return;
+            }
+            
+            if (newPassword.length < 8) {
+                showNotification('كلمة المرور يجب أن تكون على الأقل 8 أحرف', 'error');
+                return;
+            }
+            
+            try {
+                const response = await apiCall('/api/auth.php?action=change_password', 'PUT', {
+                    current_password: currentPassword,
+                    new_password: newPassword
+                });
+                
+                if (response.success) {
+                    showNotification('تم تغيير كلمة المرور بنجاح', 'success');
+                    document.getElementById('change-password-form').reset();
+                } else {
+                    throw new Error(response.message);
+                }
+            } catch (error) {
+                console.error('Error changing password:', error);
+                showNotification(error.message || 'حدث خطأ في تغيير كلمة المرور', 'error');
+            }
+        }
+
+        function changeAvatar() {
+            document.getElementById('avatar-input').click();
+        }
+
+        function handleAvatarChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // Here you would typically upload the file to the server
+                // For now, we'll just show a preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-avatar').src = e.target.result;
+                    document.getElementById('profile-avatar').style.display = 'block';
+                    document.getElementById('avatar-placeholder').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+                
+                showNotification('تم تحديث الصورة (سيتم حفظها عند حفظ الملف الشخصي)', 'info');
+            }
+        }
+
+        function exportData() {
+            showNotification('تصدير البيانات - قيد التطوير', 'info');
+        }
+
+        function deleteAccount() {
+            if (confirm('هل أنت متأكد من حذف الحساب؟ لا يمكن التراجع عن هذا الإجراء.')) {
+                showNotification('حذف الحساب - قيد التطوير', 'info');
+            }
+        }
+
+        function updateNotificationBadge(count) {
+            const badge = document.getElementById('notification-badge');
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

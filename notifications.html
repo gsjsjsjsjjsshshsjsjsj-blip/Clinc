@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الإشعارات - شفاء</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .notification-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: transform 0.2s ease;
+            border-left: 4px solid #e5e7eb;
+        }
+        .notification-card:hover {
+            transform: translateY(-2px);
+        }
+        .notification-card.unread {
+            border-left-color: #10B981;
+            background: #f0fdfa;
+        }
+        .notification-card.info {
+            border-left-color: #3b82f6;
+        }
+        .notification-card.success {
+            border-left-color: #10B981;
+        }
+        .notification-card.warning {
+            border-left-color: #f59e0b;
+        }
+        .notification-card.error {
+            border-left-color: #ef4444;
+        }
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .notification-icon.info {
+            background: #dbeafe;
+            color: #3b82f6;
+        }
+        .notification-icon.success {
+            background: #d1fae5;
+            color: #10B981;
+        }
+        .notification-icon.warning {
+            background: #fef3c7;
+            color: #f59e0b;
+        }
+        .notification-icon.error {
+            background: #fee2e2;
+            color: #ef4444;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6B7280;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #d1d5db;
+        }
+        .filter-tabs .nav-link {
+            border: none;
+            background: none;
+            color: #6B7280;
+            font-weight: 500;
+        }
+        .filter-tabs .nav-link.active {
+            color: #10B981;
+            border-bottom: 2px solid #10B981;
+        }
+    </style>
+</head>
+<body class="page-background">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3 text-primary" href="index.html">
+                <i class="bi bi-activity"></i> شفاء
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">لوحة التحكم</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="search-results.html">البحث عن الأطباء</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="appointments.html">مواعيدي</a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex align-items-center">
+                    <a href="notifications.html" class="btn btn-outline-primary me-3 position-relative">
+                        <i class="bi bi-bell"></i>
+                        <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">0</span>
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> <span id="user-name">المستخدم</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person"></i> الملف الشخصي</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2>الإشعارات</h2>
+                    <button class="btn btn-outline-primary" onclick="markAllAsRead()">
+                        <i class="bi bi-check-all"></i> تمييز الكل كمقروء
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <ul class="nav nav-pills filter-tabs" id="notification-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="all-tab" data-bs-toggle="pill" data-bs-target="#all" type="button" role="tab">
+                            جميع الإشعارات
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="unread-tab" data-bs-toggle="pill" data-bs-target="#unread" type="button" role="tab">
+                            غير المقروءة
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Notifications Content -->
+        <div class="tab-content" id="notification-tabContent">
+            <div class="tab-pane fade show active" id="all" role="tabpanel">
+                <div id="all-notifications">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">جاري التحميل...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="unread" role="tabpanel">
+                <div id="unread-notifications">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">جاري التحميل...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="secript.js"></script>
+    <script>
+        let allNotifications = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadNotifications();
+            setupTabListeners();
+        });
+
+        async function loadNotifications() {
+            try {
+                // Load user info
+                const userResponse = await apiCall('/api/auth.php?action=profile');
+                if (userResponse.success) {
+                    document.getElementById('user-name').textContent = userResponse.user.full_name;
+                }
+
+                // Load all notifications
+                const response = await apiCall('/api/notifications.php?action=list&limit=50');
+                if (response.success) {
+                    allNotifications = response.notifications;
+                    displayNotifications();
+                }
+
+                // Load unread count
+                const countResponse = await apiCall('/api/notifications.php?action=unread_count');
+                if (countResponse.success) {
+                    updateNotificationBadge(countResponse.unread_count);
+                }
+
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                showNotification('حدث خطأ في تحميل الإشعارات', 'error');
+            }
+        }
+
+        function setupTabListeners() {
+            const tabs = document.querySelectorAll('#notification-tabs button[data-bs-toggle="pill"]');
+            tabs.forEach(tab => {
+                tab.addEventListener('shown.bs.tab', function(event) {
+                    const target = event.target.getAttribute('data-bs-target');
+                    filterNotifications(target);
+                });
+            });
+        }
+
+        function displayNotifications() {
+            displayNotificationsByStatus('all', allNotifications);
+            displayNotificationsByStatus('unread', allNotifications.filter(notif => !notif.is_read));
+        }
+
+        function filterNotifications(status) {
+            let filteredNotifications = [];
+            
+            switch(status) {
+                case '#unread':
+                    filteredNotifications = allNotifications.filter(notif => !notif.is_read);
+                    break;
+                default:
+                    filteredNotifications = allNotifications;
+            }
+            
+            displayNotificationsByStatus(status.replace('#', ''), filteredNotifications);
+        }
+
+        function displayNotificationsByStatus(containerId, notifications) {
+            const container = document.getElementById(containerId + '-notifications');
+            
+            if (notifications.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-bell-slash"></i>
+                        <h5>لا توجد إشعارات</h5>
+                        <p>لم يتم العثور على إشعارات في هذا القسم</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = notifications.map(notification => `
+                <div class="notification-card ${notification.is_read ? '' : 'unread'} ${notification.type}" 
+                     onclick="markAsRead(${notification.id})">
+                    <div class="d-flex align-items-start">
+                        <div class="notification-icon ${notification.type} me-3">
+                            <i class="bi bi-${getNotificationIcon(notification.type)}"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="mb-0">${notification.title}</h6>
+                                <small class="text-muted">${formatDate(notification.created_at)}</small>
+                            </div>
+                            <p class="text-muted mb-2">${notification.message}</p>
+                            ${notification.action_url ? `
+                                <a href="${notification.action_url}" class="btn btn-sm btn-outline-primary">
+                                    عرض التفاصيل
+                                </a>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getNotificationIcon(type) {
+            const icons = {
+                'info': 'info-circle',
+                'success': 'check-circle',
+                'warning': 'exclamation-triangle',
+                'error': 'x-circle'
+            };
+            return icons[type] || 'info-circle';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffInHours = (now - date) / (1000 * 60 * 60);
+            
+            if (diffInHours < 1) {
+                return 'منذ دقائق';
+            } else if (diffInHours < 24) {
+                return `منذ ${Math.floor(diffInHours)} ساعة`;
+            } else if (diffInHours < 48) {
+                return 'أمس';
+            } else {
+                return date.toLocaleDateString('ar-SA');
+            }
+        }
+
+        async function markAsRead(notificationId) {
+            try {
+                const response = await apiCall('/api/notifications.php?action=mark_read', 'PUT', {
+                    notification_id: notificationId
+                });
+                
+                if (response.success) {
+                    // Update local data
+                    const notification = allNotifications.find(n => n.id === notificationId);
+                    if (notification) {
+                        notification.is_read = true;
+                    }
+                    
+                    // Refresh display
+                    displayNotifications();
+                    
+                    // Update badge
+                    const unreadCount = allNotifications.filter(n => !n.is_read).length;
+                    updateNotificationBadge(unreadCount);
+                }
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        }
+
+        async function markAllAsRead() {
+            try {
+                const response = await apiCall('/api/notifications.php?action=mark_all_read', 'PUT');
+                
+                if (response.success) {
+                    // Update local data
+                    allNotifications.forEach(notification => {
+                        notification.is_read = true;
+                    });
+                    
+                    // Refresh display
+                    displayNotifications();
+                    
+                    // Update badge
+                    updateNotificationBadge(0);
+                    
+                    showNotification('تم تمييز جميع الإشعارات كمقروءة', 'success');
+                }
+            } catch (error) {
+                console.error('Error marking all notifications as read:', error);
+                showNotification('حدث خطأ في تحديث الإشعارات', 'error');
+            }
+        }
+
+        function updateNotificationBadge(count) {
+            const badge = document.getElementById('notification-badge');
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

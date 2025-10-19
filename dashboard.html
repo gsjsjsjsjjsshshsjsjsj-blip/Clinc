@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - شفاء</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .dashboard-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.2s ease;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem;
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #10B981;
+        }
+        .stat-label {
+            color: #6B7280;
+            font-weight: 500;
+        }
+        .appointment-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: #f9fafb;
+        }
+        .appointment-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-confirmed { background: #d1fae5; color: #065f46; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; }
+        .status-completed { background: #e0e7ff; color: #3730a3; }
+    </style>
+</head>
+<body class="page-background">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3 text-primary" href="index.html">
+                <i class="bi bi-activity"></i> شفاء
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="dashboard.html">لوحة التحكم</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="search-results.html">البحث عن الأطباء</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="appointments.html">مواعيدي</a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex align-items-center">
+                    <a href="notifications.html" class="btn btn-outline-primary me-3 position-relative">
+                        <i class="bi bi-bell"></i>
+                        <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">0</span>
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> <span id="user-name">المستخدم</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person"></i> الملف الشخصي</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <!-- Welcome Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="dashboard-card">
+                    <h2 class="mb-3">أهلاً وسهلاً بك في شفاء</h2>
+                    <p class="text-muted mb-0">منصتك الصحية المتكاملة لإدارة مواعيدك الطبية</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="dashboard-card stat-card">
+                    <div class="stat-number" id="total-appointments">0</div>
+                    <div class="stat-label">إجمالي المواعيد</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="dashboard-card stat-card">
+                    <div class="stat-number" id="upcoming-appointments">0</div>
+                    <div class="stat-label">المواعيد القادمة</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="dashboard-card stat-card">
+                    <div class="stat-number" id="completed-appointments">0</div>
+                    <div class="stat-label">المواعيد المكتملة</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="dashboard-card stat-card">
+                    <div class="stat-number" id="unread-notifications">0</div>
+                    <div class="stat-label">الإشعارات غير المقروءة</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="dashboard-card">
+                    <h4 class="mb-3">إجراءات سريعة</h4>
+                    <div class="row">
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <a href="search-results.html" class="btn btn-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                <i class="bi bi-search fs-2 mb-2"></i>
+                                <span>البحث عن طبيب</span>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <a href="appointments.html" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                <i class="bi bi-calendar-check fs-2 mb-2"></i>
+                                <span>إدارة المواعيد</span>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <a href="profile.html" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                <i class="bi bi-person fs-2 mb-2"></i>
+                                <span>الملف الشخصي</span>
+                            </a>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <a href="notifications.html" class="btn btn-outline-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center py-3">
+                                <i class="bi bi-bell fs-2 mb-2"></i>
+                                <span>الإشعارات</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Appointments -->
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="dashboard-card">
+                    <h4 class="mb-3">المواعيد الأخيرة</h4>
+                    <div id="recent-appointments">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">جاري التحميل...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="dashboard-card">
+                    <h4 class="mb-3">الإشعارات الأخيرة</h4>
+                    <div id="recent-notifications">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">جاري التحميل...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="secript.js"></script>
+    <script>
+        // Dashboard specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+        });
+
+        async function loadDashboardData() {
+            try {
+                // Load user info
+                const userResponse = await apiCall('/api/auth.php?action=profile');
+                if (userResponse.success) {
+                    document.getElementById('user-name').textContent = userResponse.user.full_name;
+                }
+
+                // Load appointments
+                const appointmentsResponse = await apiCall('/api/appointments.php?action=my_appointments');
+                if (appointmentsResponse.success) {
+                    updateAppointmentStats(appointmentsResponse.appointments);
+                    displayRecentAppointments(appointmentsResponse.appointments);
+                }
+
+                // Load notifications
+                const notificationsResponse = await apiCall('/api/notifications.php?action=list&limit=5');
+                if (notificationsResponse.success) {
+                    updateNotificationStats(notificationsResponse.notifications);
+                    displayRecentNotifications(notificationsResponse.notifications);
+                }
+
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                showNotification('حدث خطأ في تحميل البيانات', 'error');
+            }
+        }
+
+        function updateAppointmentStats(appointments) {
+            const total = appointments.length;
+            const upcoming = appointments.filter(apt => 
+                apt.status === 'pending' || apt.status === 'confirmed'
+            ).length;
+            const completed = appointments.filter(apt => 
+                apt.status === 'completed'
+            ).length;
+
+            document.getElementById('total-appointments').textContent = total;
+            document.getElementById('upcoming-appointments').textContent = upcoming;
+            document.getElementById('completed-appointments').textContent = completed;
+        }
+
+        function updateNotificationStats(notifications) {
+            const unread = notifications.filter(notif => !notif.is_read).length;
+            document.getElementById('unread-notifications').textContent = unread;
+            document.getElementById('notification-badge').textContent = unread;
+            document.getElementById('notification-badge').style.display = unread > 0 ? 'block' : 'none';
+        }
+
+        function displayRecentAppointments(appointments) {
+            const container = document.getElementById('recent-appointments');
+            
+            if (appointments.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center">لا توجد مواعيد</p>';
+                return;
+            }
+
+            const recentAppointments = appointments.slice(0, 5);
+            container.innerHTML = recentAppointments.map(appointment => `
+                <div class="appointment-item">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">${appointment.doctor_name}</h6>
+                            <p class="text-muted mb-1">${appointment.specialization_name}</p>
+                            <small class="text-muted">${appointment.appointment_date} - ${appointment.appointment_time}</small>
+                        </div>
+                        <span class="appointment-status status-${appointment.status}">
+                            ${getStatusText(appointment.status)}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function displayRecentNotifications(notifications) {
+            const container = document.getElementById('recent-notifications');
+            
+            if (notifications.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center">لا توجد إشعارات</p>';
+                return;
+            }
+
+            container.innerHTML = notifications.map(notification => `
+                <div class="d-flex align-items-start mb-3">
+                    <div class="flex-shrink-0">
+                        <i class="bi bi-${getNotificationIcon(notification.type)} text-${getNotificationColor(notification.type)}"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-2">
+                        <h6 class="mb-1">${notification.title}</h6>
+                        <p class="text-muted mb-1 small">${notification.message}</p>
+                        <small class="text-muted">${formatDate(notification.created_at)}</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getStatusText(status) {
+            const statusTexts = {
+                'pending': 'في الانتظار',
+                'confirmed': 'مؤكد',
+                'cancelled': 'ملغي',
+                'completed': 'مكتمل',
+                'no_show': 'لم يحضر'
+            };
+            return statusTexts[status] || status;
+        }
+
+        function getNotificationIcon(type) {
+            const icons = {
+                'info': 'info-circle',
+                'success': 'check-circle',
+                'warning': 'exclamation-triangle',
+                'error': 'x-circle'
+            };
+            return icons[type] || 'info-circle';
+        }
+
+        function getNotificationColor(type) {
+            const colors = {
+                'info': 'primary',
+                'success': 'success',
+                'warning': 'warning',
+                'error': 'danger'
+            };
+            return colors[type] || 'primary';
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ar-SA');
+        }
+    </script>
+</body>
+</html>
