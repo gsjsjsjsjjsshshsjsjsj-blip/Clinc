@@ -49,33 +49,138 @@
                 <li><a href="#"><i class="bi bi-telephone-fill"></i> تواصل معنا</a></li>
                 <li><a href="#"><i class="bi bi-question-circle-fill"></i> الأسئلة الشائعة</a></li>
             </ul>
+            <hr>
+            <div class="menu-auth">
+                <a href="login.html" class="btn btn-outline-primary w-100 mb-2">تسجيل الدخول</a>
+                <a href="register.html" class="btn btn-primary w-100">إنشاء حساب</a>
+            </div>
         </div>
     </div>
 
+    <!-- Modal البحث -->
     <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="searchModalLabel"><i class="bi bi-search me-2"></i> ابحث عن الرعاية التي تحتاجها</h5>
+                    <h5 class="modal-title" id="searchModalLabel">البحث عن طبيب</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="search-results.html">
+                    <form id="searchForm">
                         <div class="row g-3">
-                            <div class="col-12"><label for="doctorName" class="form-label">التخصص، اسم الطبيب، أو الحالة</label><div class="input-group"><span class="input-group-text"><i class="bi bi-search"></i></span><input type="text" class="form-control" id="doctorName" placeholder="مثال: طبيب أسنان، د. أحمد، ..."></div></div>
-                            <div class="col-12"><label for="location" class="form-label">الموقع</label><div class="input-group"><span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span><input type="text" class="form-control" id="location" placeholder="المدينة، الحي، أو استخدم موقعي الحالي"></div></div>
-                            <div class="col-12"><label for="insurance" class="form-label">شركة التأمين (اختياري )</label><select class="form-select" id="insurance"><option selected>جميع الشركات</option><option value="1">بوبا العربية</option><option value="2">التعاونية للتأمين</option><option value="3">ميدغلف</option></select></div>
-                        </div>
-                        <div class="modal-footer mt-3">
-                            <button type="submit" class="btn btn-primary w-100">بحث</button>
+                            <div class="col-md-6">
+                                <label for="specialization" class="form-label">التخصص الطبي</label>
+                                <select class="form-select" id="specialization" name="specialization">
+                                    <option value="">اختر التخصص</option>
+                                    <option value="cardiology">أمراض القلب</option>
+                                    <option value="dermatology">الأمراض الجلدية</option>
+                                    <option value="pediatrics">طب الأطفال</option>
+                                    <option value="orthopedics">العظام</option>
+                                    <option value="neurology">الأعصاب</option>
+                                    <option value="psychiatry">الطب النفسي</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="city" class="form-label">المدينة</label>
+                                <select class="form-select" id="city" name="city">
+                                    <option value="">اختر المدينة</option>
+                                    <option value="riyadh">الرياض</option>
+                                    <option value="jeddah">جدة</option>
+                                    <option value="dammam">الدمام</option>
+                                    <option value="makkah">مكة المكرمة</option>
+                                    <option value="medina">المدينة المنورة</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="gender" class="form-label">جنس الطبيب</label>
+                                <select class="form-select" id="gender" name="gender">
+                                    <option value="">لا يهم</option>
+                                    <option value="male">ذكر</option>
+                                    <option value="female">أنثى</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="consultation" class="form-label">نوع الاستشارة</label>
+                                <select class="form-select" id="consultation" name="consultation">
+                                    <option value="">اختر النوع</option>
+                                    <option value="in_person">حضوري</option>
+                                    <option value="online">عن بُعد</option>
+                                </select>
+                            </div>
                         </div>
                     </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="performSearch()">بحث</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // تأثير الكتابة
+        document.addEventListener('DOMContentLoaded', function() {
+            const typewriterElement = document.getElementById('typewriter-text');
+            const texts = [
+                'شفاء',
+                'بوابتك للصحة',
+                'نظام المواعيد الطبية',
+                'صحتك أولويتنا'
+            ];
+            let textIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+
+            function typeWriter() {
+                const currentText = texts[textIndex];
+                
+                if (isDeleting) {
+                    typewriterElement.textContent = currentText.substring(0, charIndex - 1);
+                    charIndex--;
+                } else {
+                    typewriterElement.textContent = currentText.substring(0, charIndex + 1);
+                    charIndex++;
+                }
+
+                let typeSpeed = isDeleting ? 50 : 100;
+
+                if (!isDeleting && charIndex === currentText.length) {
+                    typeSpeed = 2000;
+                    isDeleting = true;
+                } else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    textIndex = (textIndex + 1) % texts.length;
+                    typeSpeed = 500;
+                }
+
+                setTimeout(typeWriter, typeSpeed);
+            }
+
+            typeWriter();
+        });
+
+        // وظيفة البحث
+        function performSearch() {
+            const form = document.getElementById('searchForm');
+            const formData = new FormData(form);
+            const searchParams = new URLSearchParams();
+            
+            for (let [key, value] of formData.entries()) {
+                if (value) {
+                    searchParams.append(key, value);
+                }
+            }
+            
+            // إغلاق المودال
+            const modal = bootstrap.Modal.getInstance(document.getElementById('searchModal'));
+            modal.hide();
+            
+            // الانتقال لصفحة النتائج
+            window.location.href = `search-results.html?${searchParams.toString()}`;
+        }
+    </script>
 </body>
 </html>
