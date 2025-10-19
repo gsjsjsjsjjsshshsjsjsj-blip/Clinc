@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ملف الطبيب - شفاء</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .doctor-profile-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .doctor-avatar-large {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #e5e7eb;
+        }
+        .booking-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            position: sticky;
+            top: 100px;
+        }
+        .time-slot {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 0.25rem;
+        }
+        .time-slot:hover {
+            border-color: #10B981;
+            background-color: #f0fdfa;
+        }
+        .time-slot.selected {
+            background-color: #10B981;
+            color: white;
+            border-color: #10B981;
+        }
+        .time-slot.disabled {
+            background-color: #f9fafb;
+            color: #9ca3af;
+            cursor: not-allowed;
+            text-decoration: line-through;
+        }
+        .day-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+        .day-option {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            text-align: center;
+            min-width: 120px;
+        }
+        .day-option:hover {
+            border-color: #10B981;
+        }
+        .day-option.selected {
+            background-color: #10B981;
+            color: white;
+            border-color: #10B981;
+        }
+        .day-option.disabled {
+            background-color: #f9fafb;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .review-card {
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .stars {
+            color: #fbbf24;
+        }
+        .loading-spinner {
+            text-align: center;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body class="page-background">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3 text-primary" href="index.html">
+                <i class="bi bi-activity"></i> شفاء
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.html">لوحة التحكم</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="search-results.html">البحث عن الأطباء</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="appointments.html">مواعيدي</a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex align-items-center">
+                    <a href="notifications.html" class="btn btn-outline-primary me-3 position-relative">
+                        <i class="bi bi-bell"></i>
+                        <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">0</span>
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> <span id="user-name">المستخدم</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person"></i> الملف الشخصي</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Doctor Profile -->
+            <div class="col-lg-8">
+                <div class="doctor-profile-card">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <img id="doctor-avatar" src="https://via.placeholder.com/150x150?text=طبيب" 
+                                 alt="صورة الطبيب" class="doctor-avatar-large mb-3">
+                            <h4 id="doctor-name">د. اسم الطبيب</h4>
+                            <p id="doctor-specialty" class="text-muted">التخصص</p>
+                            <div class="rating mb-3">
+                                <span class="stars" id="doctor-rating">★★★★★</span>
+                                <span id="rating-text">(0 تقييم)</span>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row mb-3">
+                                <div class="col-sm-6">
+                                    <div class="meta-item">
+                                        <i class="bi bi-clock text-primary"></i>
+                                        <span>خبرة: <strong id="experience-years">0</strong> سنوات</span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="meta-item">
+                                        <i class="bi bi-currency-dollar text-primary"></i>
+                                        <span>سعر الكشف: <strong id="consultation-fee">0</strong> ريال</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <h6>نبذة عن الطبيب</h6>
+                                <p id="doctor-bio" class="text-muted">لا توجد معلومات متاحة</p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <h6>التعليم</h6>
+                                <p id="doctor-education" class="text-muted">لا توجد معلومات متاحة</p>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <h6>اللغات</h6>
+                                <p id="doctor-languages" class="text-muted">العربية</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reviews Section -->
+                <div class="doctor-profile-card">
+                    <h5 class="mb-3">تقييمات المرضى</h5>
+                    <div id="reviews-container">
+                        <div class="loading-spinner">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">جاري التحميل...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Section -->
+            <div class="col-lg-4">
+                <div class="booking-card">
+                    <h5 class="mb-3">حجز موعد</h5>
+                    
+                    <!-- Day Selection -->
+                    <div class="mb-3">
+                        <label class="form-label">اختر اليوم</label>
+                        <div class="day-selector" id="day-selector">
+                            <!-- Days will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <!-- Time Slots -->
+                    <div class="mb-3">
+                        <label class="form-label">اختر الوقت</label>
+                        <div id="time-slots" class="d-flex flex-wrap">
+                            <p class="text-muted">اختر يوماً أولاً</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Appointment Details -->
+                    <div class="mb-3">
+                        <label for="symptoms" class="form-label">الأعراض (اختياري)</label>
+                        <textarea class="form-control" id="symptoms" rows="3" placeholder="اكتب الأعراض التي تعاني منها..."></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">ملاحظات إضافية (اختياري)</label>
+                        <textarea class="form-control" id="notes" rows="2" placeholder="أي ملاحظات إضافية..."></textarea>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button class="btn btn-primary btn-lg" id="book-appointment-btn" disabled>
+                            <i class="bi bi-calendar-check"></i> حجز الموعد
+                        </button>
+                    </div>
+                    
+                    <div class="mt-3 text-center">
+                        <small class="text-muted">
+                            <i class="bi bi-shield-check"></i> 
+                            بياناتك محمية ومشفرة
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Confirmation Modal -->
+    <div class="modal fade" id="bookingModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">تأكيد الحجز</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+                    </div>
+                    <h6 class="text-center mb-3">تم حجز موعدك بنجاح!</h6>
+                    <div class="booking-details">
+                        <p><strong>الطبيب:</strong> <span id="confirm-doctor-name"></span></p>
+                        <p><strong>التاريخ:</strong> <span id="confirm-date"></span></p>
+                        <p><strong>الوقت:</strong> <span id="confirm-time"></span></p>
+                        <p><strong>السعر:</strong> <span id="confirm-price"></span> ريال</p>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        ستصلك رسالة تأكيد على بريدك الإلكتروني
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                    <a href="appointments.html" class="btn btn-primary">عرض مواعيدي</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="secript.js"></script>
+    <script>
+        let doctorId = null;
+        let selectedDate = null;
+        let selectedTime = null;
+        let doctorData = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePage();
+        });
+
+        function initializePage() {
+            // Get doctor ID from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            doctorId = urlParams.get('id');
+            
+            if (!doctorId) {
+                showNotification('معرف الطبيب غير صحيح', 'error');
+                window.location.href = 'search-results.html';
+                return;
+            }
+            
+            loadDoctorProfile();
+            loadReviews();
+            setupEventListeners();
+        }
+
+        async function loadDoctorProfile() {
+            try {
+                const response = await apiCall(`/api/doctors.php?action=details&doctor_id=${doctorId}`);
+                if (response.success) {
+                    doctorData = response.doctor;
+                    displayDoctorProfile(doctorData);
+                    generateDayOptions();
+                } else {
+                    throw new Error(response.message);
+                }
+            } catch (error) {
+                console.error('Error loading doctor profile:', error);
+                showNotification('حدث خطأ في تحميل بيانات الطبيب', 'error');
+            }
+        }
+
+        function displayDoctorProfile(doctor) {
+            document.getElementById('doctor-name').textContent = `د. ${doctor.full_name}`;
+            document.getElementById('doctor-specialty').textContent = doctor.specialization_name;
+            document.getElementById('experience-years').textContent = doctor.experience_years || 0;
+            document.getElementById('consultation-fee').textContent = doctor.consultation_fee || 0;
+            document.getElementById('doctor-bio').textContent = doctor.bio || 'لا توجد معلومات متاحة';
+            document.getElementById('doctor-education').textContent = doctor.education || 'لا توجد معلومات متاحة';
+            
+            // Set rating
+            const rating = doctor.rating || 0;
+            const stars = '★'.repeat(Math.floor(rating)) + '☆'.repeat(5 - Math.floor(rating));
+            document.getElementById('doctor-rating').textContent = stars;
+            document.getElementById('rating-text').textContent = `(${doctor.total_reviews || 0} تقييم)`;
+            
+            // Set languages
+            if (doctor.languages) {
+                try {
+                    const languages = JSON.parse(doctor.languages);
+                    document.getElementById('doctor-languages').textContent = languages.join('، ');
+                } catch (e) {
+                    document.getElementById('doctor-languages').textContent = doctor.languages;
+                }
+            }
+            
+            // Set avatar
+            if (doctor.profile_image) {
+                document.getElementById('doctor-avatar').src = doctor.profile_image;
+            }
+        }
+
+        async function loadReviews() {
+            try {
+                const response = await apiCall(`/api/doctors.php?action=reviews&doctor_id=${doctorId}&limit=5`);
+                if (response.success) {
+                    displayReviews(response.reviews);
+                }
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+            }
+        }
+
+        function displayReviews(reviews) {
+            const container = document.getElementById('reviews-container');
+            
+            if (reviews.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center">لا توجد تقييمات بعد</p>';
+                return;
+            }
+
+            container.innerHTML = reviews.map(review => `
+                <div class="review-card">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="mb-0">${review.patient_name || 'مريض'}</h6>
+                        <div class="stars">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</div>
+                    </div>
+                    <p class="text-muted small mb-0">${review.comment || 'لا توجد تعليقات'}</p>
+                    <small class="text-muted">${formatDate(review.created_at)}</small>
+                </div>
+            `).join('');
+        }
+
+        function generateDayOptions() {
+            const container = document.getElementById('day-selector');
+            const today = new Date();
+            const options = [];
+            
+            for (let i = 0; i < 14; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                
+                const dayName = date.toLocaleDateString('ar-SA', { weekday: 'long' });
+                const dayNumber = date.getDate();
+                const monthName = date.toLocaleDateString('ar-SA', { month: 'long' });
+                
+                const option = document.createElement('div');
+                option.className = 'day-option';
+                option.dataset.date = date.toISOString().split('T')[0];
+                option.innerHTML = `
+                    <div>${dayName}</div>
+                    <div><strong>${dayNumber}</strong></div>
+                    <div class="small">${monthName}</div>
+                `;
+                
+                option.addEventListener('click', function() {
+                    selectDay(this);
+                });
+                
+                options.push(option);
+            }
+            
+            container.innerHTML = '';
+            options.forEach(option => container.appendChild(option));
+        }
+
+        function selectDay(dayElement) {
+            // Remove previous selection
+            document.querySelectorAll('.day-option').forEach(el => el.classList.remove('selected'));
+            
+            // Add selection to clicked element
+            dayElement.classList.add('selected');
+            selectedDate = dayElement.dataset.date;
+            
+            // Load time slots for selected date
+            loadTimeSlots(selectedDate);
+        }
+
+        async function loadTimeSlots(date) {
+            try {
+                const response = await apiCall(`/api/appointments.php?action=available_slots&doctor_id=${doctorId}&date=${date}`);
+                if (response.success) {
+                    displayTimeSlots(response.available_slots);
+                }
+            } catch (error) {
+                console.error('Error loading time slots:', error);
+                showNotification('حدث خطأ في تحميل الأوقات المتاحة', 'error');
+            }
+        }
+
+        function displayTimeSlots(slots) {
+            const container = document.getElementById('time-slots');
+            
+            if (slots.length === 0) {
+                container.innerHTML = '<p class="text-muted">لا توجد أوقات متاحة في هذا اليوم</p>';
+                return;
+            }
+
+            container.innerHTML = slots.map(slot => `
+                <div class="time-slot" data-time="${slot}">
+                    ${formatTime(slot)}
+                </div>
+            `).join('');
+            
+            // Add click listeners
+            container.querySelectorAll('.time-slot').forEach(slot => {
+                slot.addEventListener('click', function() {
+                    selectTime(this);
+                });
+            });
+        }
+
+        function selectTime(timeElement) {
+            // Remove previous selection
+            document.querySelectorAll('.time-slot').forEach(el => el.classList.remove('selected'));
+            
+            // Add selection to clicked element
+            timeElement.classList.add('selected');
+            selectedTime = timeElement.dataset.time;
+            
+            // Enable booking button
+            document.getElementById('book-appointment-btn').disabled = false;
+        }
+
+        function setupEventListeners() {
+            document.getElementById('book-appointment-btn').addEventListener('click', bookAppointment);
+        }
+
+        async function bookAppointment() {
+            if (!selectedDate || !selectedTime) {
+                showNotification('يرجى اختيار التاريخ والوقت', 'error');
+                return;
+            }
+
+            try {
+                const appointmentData = {
+                    doctor_id: doctorId,
+                    appointment_date: selectedDate,
+                    appointment_time: selectedTime,
+                    symptoms: document.getElementById('symptoms').value,
+                    notes: document.getElementById('notes').value,
+                    total_fee: doctorData.consultation_fee
+                };
+
+                const response = await apiCall('/api/appointments.php?action=book', 'POST', appointmentData);
+                
+                if (response.success) {
+                    showBookingConfirmation();
+                } else {
+                    throw new Error(response.message);
+                }
+            } catch (error) {
+                console.error('Error booking appointment:', error);
+                showNotification(error.message || 'حدث خطأ في حجز الموعد', 'error');
+            }
+        }
+
+        function showBookingConfirmation() {
+            // Update modal content
+            document.getElementById('confirm-doctor-name').textContent = `د. ${doctorData.full_name}`;
+            document.getElementById('confirm-date').textContent = formatDate(selectedDate);
+            document.getElementById('confirm-time').textContent = formatTime(selectedTime);
+            document.getElementById('confirm-price').textContent = doctorData.consultation_fee;
+            
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('bookingModal'));
+            modal.show();
+        }
+
+        function formatTime(timeString) {
+            const time = new Date(`2000-01-01T${timeString}`);
+            return time.toLocaleTimeString('ar-SA', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
+            });
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('ar-SA', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+    </script>
+</body>
+</html>

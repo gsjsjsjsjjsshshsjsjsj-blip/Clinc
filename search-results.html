@@ -8,6 +8,25 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <style>
+        .loading-spinner {
+            text-align: center;
+            padding: 3rem;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6B7280;
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: #d1d5db;
+        }
+        .sort-dropdown {
+            min-width: 200px;
+        }
+    </style>
 </head>
 <body class="page-background">
 
@@ -15,8 +34,22 @@
         <div class="container">
             <a class="navbar-brand fw-bold fs-4 text-primary-color" href="index.html"><i class="bi bi-activity"></i> شفاء</a>
             <div class="ms-auto d-flex align-items-center">
-                <a href="#" class="auth-icon-inner me-3" title="الإشعارات"><i class="bi bi-bell-fill"></i></a>
-                <a href="#" class="auth-icon-inner" title="حسابي"><i class="bi bi-person-circle"></i></a>
+                <a href="notifications.html" class="auth-icon-inner me-3 position-relative" title="الإشعارات">
+                    <i class="bi bi-bell-fill"></i>
+                    <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">0</span>
+                </a>
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> <span id="user-name">المستخدم</span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="dashboard.html"><i class="bi bi-house"></i> لوحة التحكم</a></li>
+                        <li><a class="dropdown-item" href="appointments.html"><i class="bi bi-calendar-check"></i> مواعيدي</a></li>
+                        <li><a class="dropdown-item" href="profile.html"><i class="bi bi-person"></i> الملف الشخصي</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#" onclick="logout()"><i class="bi bi-box-arrow-right"></i> تسجيل الخروج</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>
@@ -26,58 +59,72 @@
             <aside class="col-lg-3">
                 <div class="filters-sidebar">
                     <h4 class="filters-title">تصفية النتائج</h4>
-                    <div class="filter-group">
-                        <h6 class="filter-group-title">التوفر</h6>
-                        <div class="form-check"><input class="form-check-input" type="radio" name="availability" id="availToday" checked><label class="form-check-label" for="availToday">اليوم</label></div>
-                        <div class="form-check"><input class="form-check-input" type="radio" name="availability" id="availTomorrow"><label class="form-check-label" for="availTomorrow">غداً</label></div>
-                        <div class="form-check"><input class="form-check-input" type="radio" name="availability" id="availThisWeek"><label class="form-check-label" for="availThisWeek">هذا الأسبوع</label></div>
-                    </div>
-                    <div class="filter-group">
-                        <h6 class="filter-group-title">سعر الكشف</h6>
-                        <label for="priceRange" class="form-label small text-muted">الحد الأقصى: <span id="priceValue">500</span> ريال</label>
-                        <input type="range" class="form-range" min="50" max="500" step="50" id="priceRange" value="500">
-                    </div>
-                    <div class="filter-group">
-                        <h6 class="filter-group-title">جنس الطبيب</h6>
-                        <div class="form-check"><input class="form-check-input" type="radio" name="gender" id="genderAny" checked><label class="form-check-label" for="genderAny">الكل</label></div>
-                        <div class="form-check"><input class="form-check-input" type="radio" name="gender" id="genderMale"><label class="form-check-label" for="genderMale">ذكر</label></div>
-                        <div class="form-check"><input class="form-check-input" type="radio" name="gender" id="genderFemale"><label class="form-check-label" for="genderFemale">أنثى</label></div>
-                    </div>
-                    <div class="d-grid mt-4"><button class="btn btn-primary">تطبيق الفلاتر</button></div>
+                    
+                    <!-- Search Form -->
+                    <form id="searchForm">
+                        <div class="mb-3">
+                            <label for="searchInput" class="form-label">البحث</label>
+                            <input type="text" class="form-control" id="searchInput" placeholder="اسم الطبيب أو التخصص">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="specializationSelect" class="form-label">التخصص</label>
+                            <select class="form-select" id="specializationSelect">
+                                <option value="">جميع التخصصات</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="citySelect" class="form-label">المدينة</label>
+                            <select class="form-select" id="citySelect">
+                                <option value="">جميع المدن</option>
+                                <option value="الرياض">الرياض</option>
+                                <option value="جدة">جدة</option>
+                                <option value="الدمام">الدمام</option>
+                            </select>
+                        </div>
+                        
+                        <div class="filter-group">
+                            <h6 class="filter-group-title">سعر الكشف</h6>
+                            <label for="priceRange" class="form-label small text-muted">الحد الأقصى: <span id="priceValue">500</span> ريال</label>
+                            <input type="range" class="form-range" min="50" max="1000" step="50" id="priceRange" value="500">
+                        </div>
+                        
+                        <div class="filter-group">
+                            <h6 class="filter-group-title">ترتيب النتائج</h6>
+                            <select class="form-select" id="sortSelect">
+                                <option value="rating">الأعلى تقييماً</option>
+                                <option value="fee_low">الأقل سعراً</option>
+                                <option value="fee_high">الأعلى سعراً</option>
+                                <option value="experience">الأكثر خبرة</option>
+                            </select>
+                        </div>
+                        
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary">تطبيق الفلاتر</button>
+                        </div>
+                    </form>
                 </div>
             </aside>
 
             <section class="col-lg-9">
-                <div class="results-header"><h5>وجدنا <strong>3</strong> أطباء أسنان في <strong>الرياض</strong></h5></div>
-                <div class="doctor-card">
-                    <div class="doctor-card-img"><img src="https://t4.ftcdn.net/jpg/02/60/04/09/360_F_260040900_oO6YW1sHTnKxby4GcjCvtypUCWjnQRg5.jpg" alt="د. أحمد المصري"></div>
-                    <div class="doctor-card-body">
-                        <div class="doctor-info">
-                            <h5 class="doctor-name">د. أحمد المصري</h5>
-                            <p class="doctor-specialty">أخصائي أول طب وجراحة الأسنان</p>
-                            <div class="doctor-rating"><i class="bi bi-star-fill"></i> 4.9 <span class="text-muted">(124 تقييم )</span></div>
-                            <p class="doctor-location"><i class="bi bi-geo-alt"></i> حي العليا، الرياض</p>
-                        </div>
-                        <div class="doctor-booking-info">
-                            <p class="availability-info"><i class="bi bi-calendar-check"></i> أول موعد متاح: <strong>غداً، 10:00 ص</strong></p>
-                            <p class="price-info">سعر الكشف: <strong>300 ريال</strong></p>
-                            <a href="doctor-profile.html" class="btn btn-primary mt-2">عرض المواعيد والحجز</a>
-                        </div>
+                <div class="results-header d-flex justify-content-between align-items-center">
+                    <h5 id="results-count">جاري البحث...</h5>
+                    <div class="d-flex align-items-center gap-3">
+                        <span>ترتيب حسب:</span>
+                        <select class="form-select sort-dropdown" id="sortDropdown">
+                            <option value="rating">الأعلى تقييماً</option>
+                            <option value="fee_low">الأقل سعراً</option>
+                            <option value="fee_high">الأعلى سعراً</option>
+                            <option value="experience">الأكثر خبرة</option>
+                        </select>
                     </div>
                 </div>
-                <div class="doctor-card">
-                    <div class="doctor-card-img"><img src="https://t3.ftcdn.net/jpg/02/95/51/80/360_F_295518052_aO5d9CqRhPJeawu_d2p_G9yWeIioJ02a.jpg" alt="د. سارة عبدالله"></div>
-                    <div class="doctor-card-body">
-                        <div class="doctor-info">
-                            <h5 class="doctor-name">د. سارة عبدالله</h5>
-                            <p class="doctor-specialty">استشارية تجميل وزراعة الأسنان</p>
-                            <div class="doctor-rating"><i class="bi bi-star-fill"></i> 4.8 <span class="text-muted">(98 تقييم )</span></div>
-                            <p class="doctor-location"><i class="bi bi-geo-alt"></i> حي النخيل، الرياض</p>
-                        </div>
-                        <div class="doctor-booking-info">
-                            <p class="availability-info"><i class="bi bi-calendar-check"></i> أول موعد متاح: <strong>اليوم، 04:30 م</strong></p>
-                            <p class="price-info">سعر الكشف: <strong>450 ريال</strong></p>
-                            <a href="doctor-profile.html" class="btn btn-primary mt-2">عرض المواعيد والحجز</a>
+                
+                <div id="doctors-container">
+                    <div class="loading-spinner">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">جاري التحميل...</span>
                         </div>
                     </div>
                 </div>
@@ -86,6 +133,215 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="script.js"></script>
+    <script src="secript.js"></script>
+    <script>
+        let allDoctors = [];
+        let currentFilters = {};
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePage();
+            loadSpecializations();
+            loadDoctors();
+            setupEventListeners();
+        });
+
+        function initializePage() {
+            // Get search parameters from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const search = urlParams.get('search');
+            const city = urlParams.get('city');
+            
+            if (search) {
+                document.getElementById('searchInput').value = search;
+                currentFilters.search = search;
+            }
+            if (city) {
+                document.getElementById('citySelect').value = city;
+                currentFilters.city = city;
+            }
+        }
+
+        async function loadSpecializations() {
+            try {
+                const response = await apiCall('/api/doctors.php?action=specializations');
+                if (response.success) {
+                    const select = document.getElementById('specializationSelect');
+                    select.innerHTML = '<option value="">جميع التخصصات</option>' +
+                        response.specializations.map(spec => 
+                            `<option value="${spec.id}">${spec.name_ar}</option>`
+                        ).join('');
+                }
+            } catch (error) {
+                console.error('Error loading specializations:', error);
+            }
+        }
+
+        async function loadDoctors() {
+            try {
+                showLoading();
+                
+                const params = new URLSearchParams();
+                Object.keys(currentFilters).forEach(key => {
+                    if (currentFilters[key]) {
+                        params.append(key, currentFilters[key]);
+                    }
+                });
+                
+                const response = await apiCall(`/api/doctors.php?action=search&${params.toString()}`);
+                if (response.success) {
+                    allDoctors = response.doctors;
+                    displayDoctors(allDoctors);
+                    updateResultsCount(response.total);
+                }
+            } catch (error) {
+                console.error('Error loading doctors:', error);
+                showError('حدث خطأ في تحميل الأطباء');
+            }
+        }
+
+        function setupEventListeners() {
+            // Search form
+            document.getElementById('searchForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                applyFilters();
+            });
+            
+            // Sort dropdown
+            document.getElementById('sortDropdown').addEventListener('change', function() {
+                currentFilters.sort_by = this.value;
+                loadDoctors();
+            });
+            
+            // Price range
+            document.getElementById('priceRange').addEventListener('input', function() {
+                document.getElementById('priceValue').textContent = this.value;
+                currentFilters.max_fee = this.value;
+            });
+            
+            // Search input
+            document.getElementById('searchInput').addEventListener('input', debounce(function() {
+                currentFilters.search = this.value;
+                loadDoctors();
+            }, 500));
+            
+            // Specialization select
+            document.getElementById('specializationSelect').addEventListener('change', function() {
+                currentFilters.specialization_id = this.value;
+                loadDoctors();
+            });
+            
+            // City select
+            document.getElementById('citySelect').addEventListener('change', function() {
+                currentFilters.city = this.value;
+                loadDoctors();
+            });
+        }
+
+        function applyFilters() {
+            currentFilters = {
+                search: document.getElementById('searchInput').value,
+                specialization_id: document.getElementById('specializationSelect').value,
+                city: document.getElementById('citySelect').value,
+                max_fee: document.getElementById('priceRange').value,
+                sort_by: document.getElementById('sortDropdown').value
+            };
+            
+            // Remove empty filters
+            Object.keys(currentFilters).forEach(key => {
+                if (!currentFilters[key]) {
+                    delete currentFilters[key];
+                }
+            });
+            
+            loadDoctors();
+        }
+
+        function displayDoctors(doctors) {
+            const container = document.getElementById('doctors-container');
+            
+            if (doctors.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-search"></i>
+                        <h5>لم يتم العثور على أطباء</h5>
+                        <p>جرب تعديل معايير البحث</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = doctors.map(doctor => `
+                <div class="doctor-card">
+                    <div class="doctor-card-img">
+                        <img src="${doctor.profile_image || 'https://via.placeholder.com/120x120?text=طبيب'}" 
+                             alt="${doctor.full_name}" 
+                             onerror="this.src='https://via.placeholder.com/120x120?text=طبيب'">
+                    </div>
+                    <div class="doctor-card-body">
+                        <div class="doctor-info">
+                            <h5 class="doctor-name">د. ${doctor.full_name}</h5>
+                            <p class="doctor-specialty">${doctor.specialization_name}</p>
+                            <div class="doctor-rating">
+                                <i class="bi bi-star-fill"></i> ${doctor.rating || '0.0'} 
+                                <span class="text-muted">(${doctor.total_reviews || 0} تقييم)</span>
+                            </div>
+                            <p class="doctor-location">
+                                <i class="bi bi-geo-alt"></i> ${doctor.city || 'غير محدد'}
+                            </p>
+                            ${doctor.bio ? `<p class="text-muted small mt-2">${doctor.bio.substring(0, 100)}...</p>` : ''}
+                        </div>
+                        <div class="doctor-booking-info">
+                            <p class="availability-info">
+                                <i class="bi bi-calendar-check"></i> 
+                                ${doctor.is_available ? 'متاح للحجز' : 'غير متاح حالياً'}
+                            </p>
+                            <p class="price-info">سعر الكشف: <strong>${doctor.consultation_fee} ريال</strong></p>
+                            <p class="text-muted small">خبرة: ${doctor.experience_years} سنوات</p>
+                            <a href="doctor-profile.html?id=${doctor.id}" class="btn btn-primary mt-2">
+                                عرض المواعيد والحجز
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateResultsCount(count) {
+            document.getElementById('results-count').innerHTML = `وجدنا <strong>${count}</strong> طبيب`;
+        }
+
+        function showLoading() {
+            document.getElementById('doctors-container').innerHTML = `
+                <div class="loading-spinner">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">جاري التحميل...</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showError(message) {
+            document.getElementById('doctors-container').innerHTML = `
+                <div class="empty-state">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <h5>حدث خطأ</h5>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        // Debounce function for search input
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    </script>
 </body>
 </html>
